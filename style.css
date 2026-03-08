@@ -1000,3 +1000,43 @@ body {
     visibility: hidden;
     transition: var(--transition);
     z-index: 9
+
+
+/* 投稿联系方式 */
+.submit-contact {
+    margin-top: 2rem;
+}
+
+.contact-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 1.5rem 1.75rem;
+    max-width: 860px;
+    margin: 0 auto;
+}
+
+.contact-card h3 {
+    margin-bottom: 0.8rem;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.contact-card p {
+    margin: 0.45rem 0;
+    color: var(--text-secondary);
+}
+
+.contact-card a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.contact-card code {
+    background: var(--bg-alt);
+    padding: 0.15rem 0.4rem;
+    border-radius: var(--radius-sm);
+}
