@@ -378,6 +378,15 @@ body {
     color: var(--primary);
 }
 
+.section-lead {
+    max-width: 900px;
+    margin: -0.5rem auto 2.2rem;
+    text-align: center;
+    color: var(--text-secondary);
+    line-height: 1.8;
+    font-size: 1rem;
+}
+
 /* 渐入动画 */
 .fade-in {
     opacity: 0;
