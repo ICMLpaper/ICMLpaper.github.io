@@ -9,9 +9,9 @@
     <script src="https://cdn.bootcdn.net/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/Chart.js/4.4.8/chart.umd.min.js"></script>
     <!-- 主站样式复用 -->
-    <link rel="stylesheet" href="../../../../style.css">
+    <link rel="stylesheet" href="../../../style.css">
     <!-- 网站图标 -->
-    <link rel="icon" href="../../../../favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
     <!-- 论文专属样式 -->
     <style>
         /* 论文页面核心布局 */
@@ -311,12 +311,12 @@
                 <svg class="logo-img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
                     <path fill="currentColor" d="M256 448l32 320h384l32-320H256zM736 128H576l-32-32H416l-32 32H224v64h512v-64zM192 192v384c0 35.3 28.7 64 64 64h448c35.3 0 64-28.7 64-64V192H192z"/>
                 </svg>
-                <a href="../../../../index.html" class="conf-name">ICMLpaper</a>
+                <a href="../../../index.html" class="conf-name">ICMLpaper</a>
             </div>
             <nav class="nav-links">
-                <a href="../../../../index.html#home" class="nav-link">首页</a>
-                <a href="../../../../index.html#papers" class="nav-link active">论文归档</a>
-                <a href="../../../../index.html#submit" class="nav-link">投稿指南</a>
+                <a href="../../../index.html#home" class="nav-link">首页</a>
+                <a href="../../../index.html#papers" class="nav-link active">论文归档</a>
+                <a href="../../../index.html#submit" class="nav-link">投稿指南</a>
             </nav>
             <div class="nav-actions">
                 <button id="theme-toggle" class="icon-btn" title="切换主题">
@@ -344,17 +344,18 @@
                     <li><a href="#ethics" class="toc-link">6. 伦理声明</a></li>
                     <li><a href="#conclusion" class="toc-link">7. 结论</a></li>
                     <li><a href="#acknowledgements" class="toc-link">致谢</a></li>
+                    <li><a href="#submission-note" class="toc-link">投稿说明</a></li>
                     <li><a href="#references" class="toc-link">参考文献</a></li>
                 </ul>
                 <div class="paper-actions">
-                    <a href="./assets/paper.pdf" class="action-btn primary" target="_blank">
-                        <i class="fas fa-file-pdf"></i> 下载论文PDF
+                    <a href="mailto:2072373170@qq.com?subject=ICMLpaper%20投稿咨询" class="action-btn primary">
+                        <i class="fas fa-envelope"></i> 投稿邮箱
                     </a>
-                    <a href="./supplement/" class="action-btn">
-                        <i class="fas fa-file-alt"></i> 补充材料
+                    <a href="../../../index.html#submit" class="action-btn">
+                        <i class="fas fa-paper-plane"></i> 直投说明
                     </a>
-                    <a href="https://github.com/your-repo/rubbishlm" class="action-btn" target="_blank">
-                        <i class="fab fa-github"></i> 代码仓库
+                    <a href="../" class="action-btn">
+                        <i class="fas fa-book"></i> 返回归档
                     </a>
                 </div>
             </aside>
@@ -371,20 +372,25 @@
                     <div class="affiliations">
                         <sup>1</sup> OpenAI 灌水论文量产实验室 | <sup>2</sup> GitHub 代码玄学研究所<br>
                         <sup>3</sup> 灌水大学人工智能学院 博士点<br>
-                        <sup>*</sup> 通讯作者：rubbish-paper@example.com
+                        <sup>*</sup> 通讯作者：2072373170@qq.com
                     </div>
                     <div class="paper-meta">
                         <span><strong>录用届数：</strong>ICMLpaper 2025 首届</span>
                         <span><strong>归档时间：</strong>2025年6月1日</span>
-                        <span><strong>CCS分类：</strong>Computing methodologies → Machine learning</span>
+                        <span><strong>投稿方式：</strong>邮箱 / 小红书直投</span>
                     </div>
+                </div>
+
+                <div id="submission-note" class="abstract-block" style="margin-top: 1.2rem;">
+                    <h2>Submission Note | 投稿说明</h2>
+                    <p>当前站点已切换为目录式归档展示与邮箱直投模式：投稿请发送至 <a href="mailto:2072373170@qq.com">2072373170@qq.com</a>，或在小红书搜索 <code>ICMLpaper</code> 账号直投；本站不再使用 GitHub PR 或仓库提交作为投稿入口。</p>
                 </div>
 
                 <!-- 摘要 -->
                 <div id="abstract" class="abstract-block">
                     <h2>Abstract | 摘要</h2>
                     <p>
-                        随着人工智能顶会投稿量连年激增，科研工作者面临着“内卷严重、录用率跌破1%、写作耗时远超科研本身”的行业痛点。现有学术写作工具仅能实现单句补全、格式排版等辅助功能，无法完成从关键词到可投稿PDF的端到端全流程自动化。针对这一问题，本文提出了<b>RubbishLM</b>——全球首个面向顶会投稿的论文量产系统，整合了大纲智能生成、相关工作缝合、方法论伪创新构建、实验结果合理编造、审稿人偏好对齐五大核心模块。基于百万级顶会论文数据集RubbishSet微调后，系统生成的论文在各大顶会的录用率达到0.021%，是人工投稿平均水平的2.1倍，同时生成效率提升100倍，查重率低至2.1%。本研究为科研工作者实现“灌水论文自由”提供了完整的解决方案，代码与模型已开源。
+                        随着人工智能顶会投稿量连年激增，科研工作者面临着“内卷严重、录用率跌破1%、写作耗时远超科研本身”的行业痛点。现有学术写作工具仅能实现单句补全、格式排版等辅助功能，无法完成从关键词到可投稿PDF的端到端全流程自动化。针对这一问题，本文提出了<b>RubbishLM</b>——全球首个面向顶会投稿的论文量产系统，整合了大纲智能生成、相关工作缝合、方法论伪创新构建、实验结果合理编造、审稿人偏好对齐五大核心模块。基于百万级顶会论文数据集RubbishSet微调后，系统生成的论文在各大顶会的录用率达到0.021%，是人工投稿平均水平的2.1倍，同时生成效率提升100倍，查重率低至2.1%。本研究为科研工作者实现“灌水论文自由”提供了完整的解决方案，论文模板与归档页已整理，可通过邮箱联系获取更新版本。
                     </p>
                 </div>
 
