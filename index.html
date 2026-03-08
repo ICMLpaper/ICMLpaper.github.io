@@ -3,22 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ICML 2026 | International Conference of Machine Learning Rubbish</title>
-    <meta name="description" content="全球最水的人工智能顶会，致力于让每一篇灌水论文都有处可去">
-    <!-- 引入外部资源 -->
+    <title>ICMLpaper 2026 | International Conference of Machine Learning Paper Rubbish</title>
+    <meta name="description" content="机器学习灌水论文专属学术社区，公平无偏见的投稿平台">
+    <!-- 仅保留通用CDN，无任何iclrpaper相关引用 -->
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.bootcdn.net/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
     <link rel="stylesheet" href="style.css">
-    <!-- 网站图标 -->
-    <link rel="icon" href="https://iclrpaper.github.io/iclrpaper/assets/trash.png" type="image/png">
+    <!-- 自制favicon，无外部依赖 -->
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
 </head>
 <body>
     <!-- 顶部导航栏 -->
     <header class="navbar" id="navbar">
         <div class="nav-container">
             <div class="logo">
-                <img src="icml-logo.svg" alt="ICML Logo" class="logo-img">
-                <span class="conf-name">ICML 2026</span>
+                <!-- 内联SVG自制logo，彻底移除外部图片 -->
+                <svg class="logo-img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="currentColor" d="M256 448l32 320h384l32-320H256zM736 128H576l-32-32H416l-32 32H224v64h512v-64zM192 192v384c0 35.3 28.7 64 64 64h448c35.3 0 64-28.7 64-64V192H192z"/>
+                </svg>
+                <span class="conf-name">ICMLpaper 2026</span>
             </div>
             <!-- 桌面端导航 -->
             <nav class="nav-links">
@@ -28,6 +31,7 @@
                 <a href="#speakers" class="nav-link">特邀讲者</a>
                 <a href="#topics" class="nav-link">征稿主题</a>
                 <a href="#papers" class="nav-link">录用论文</a>
+                <a href="#submit" class="nav-link">投稿指南</a>
                 <a href="#faq" class="nav-link">FAQ</a>
             </nav>
             <!-- 操作按钮 -->
@@ -48,6 +52,7 @@
             <a href="#speakers" class="mobile-link">特邀讲者</a>
             <a href="#topics" class="mobile-link">征稿主题</a>
             <a href="#papers" class="mobile-link">录用论文</a>
+            <a href="#submit" class="mobile-link">投稿指南</a>
             <a href="#faq" class="mobile-link">FAQ</a>
         </div>
     </header>
@@ -56,8 +61,8 @@
     <section id="home" class="hero">
         <div class="hero-overlay"></div>
         <div class="hero-content">
-            <h1 class="hero-title">ICML 2026</h1>
-            <p class="hero-subtitle">International Conference of Machine Learning Rubbish</p>
+            <h1 class="hero-title">ICMLpaper 2026</h1>
+            <p class="hero-subtitle">International Conference of Machine Learning Paper Rubbish</p>
             <p class="hero-slogan typewriter">致力于打造全球最公平的灌水论文发表平台，审稿全看缘分，录用全靠运气</p>
             <div class="hero-stats">
                 <div class="stat-item">
@@ -91,13 +96,13 @@
     <section id="about" class="section">
         <div class="container">
             <h2 class="section-title fade-in">
-                <i class="fas fa-info-circle"></i> 关于 ICML 2026
+                <i class="fas fa-info-circle"></i> 关于 ICMLpaper 2026
             </h2>
             <div class="about-content fade-in">
                 <div class="about-text">
-                    <p>ICML（International Conference of Machine Learning Rubbish）是人工智能领域最具影响力的“底会”，自2023年举办以来，始终致力于为全球科研工作者提供一个“灌水自由”的学术平台。</p>
-                    <p>我们打破传统顶会的审稿偏见，首创「随机录用」机制，彻底解决“创新性不足”、“实验不充分”、“相关工作缺失”等经典拒稿理由，让每一篇论文都拥有平等的录用机会。</p>
-                    <p>2026年，我们将继续秉承“能跑就行、能灌就收”的宗旨，为全球AI学术圈带来最纯粹的灌水体验。</p>
+                    <p>ICMLpaper（International Conference of Machine Learning Paper Rubbish）是机器学习领域极具影响力的灌水论文专属学术社区，自2025年举办首届会议以来，始终致力于为全球科研工作者提供一个“灌水自由”的平等学术平台。</p>
+                    <p>我们打破传统学术会议的审稿偏见，首创「随机录用」机制，彻底解决“创新性不足”、“实验不充分”、“相关工作缺失”等经典拒稿理由，让每一篇论文都拥有平等的录用机会。</p>
+                    <p>2026年，我们将继续秉承“能跑就行、能灌就收”的宗旨，为全球AI学术圈带来最纯粹的灌水体验，所有录用论文将永久归档在本站投稿目录，永久可查。</p>
                     <div class="formula">
                         <p>灌水论文录用核心公式：</p>
                         \[ P(\text{录用}) = \frac{\text{页数} \times \text{参考文献数量}}{\text{审稿人当天心情指数} \times 1000} \]
@@ -114,7 +119,7 @@
                         </li>
                         <li>
                             <i class="fas fa-map-marker-alt"></i>
-                            <span>会议地点：线上腾讯会议</span>
+                            <span>会议地点：线上会议</span>
                         </li>
                         <li>
                             <i class="fas fa-user-tie"></i>
@@ -122,7 +127,7 @@
                         </li>
                         <li>
                             <i class="fas fa-book"></i>
-                            <span>收录数据库：arXiv预印本</span>
+                            <span>论文归档：本站submissions目录</span>
                         </li>
                     </ul>
                 </div>
@@ -141,7 +146,7 @@
                     <div class="timeline-date">2026年4月1日</div>
                     <div class="timeline-content">
                         <h3>投稿截止</h3>
-                        <p>所有稿件必须在愚人节当天23:59前提交，逾期系统自动销毁，不接受任何延期申请。</p>
+                        <p>所有稿件必须在愚人节当天23:59前提交，逾期系统自动关闭，不接受任何延期申请。</p>
                     </div>
                 </div>
                 <div class="timeline-item fade-in">
@@ -168,8 +173,8 @@
                 <div class="timeline-item fade-in">
                     <div class="timeline-date">2026年6月1日</div>
                     <div class="timeline-content">
-                        <h3>会议召开</h3>
-                        <p>线上会议全程播放《学术咸鱼自救指南》，录用作者可自愿进行1分钟闪电报告。</p>
+                        <h3>会议召开 & 论文归档</h3>
+                        <p>线上会议全程播放《学术咸鱼自救指南》，录用论文同步归档至本站submissions目录，永久开放访问。</p>
                     </div>
                 </div>
             </div>
@@ -197,7 +202,7 @@
                     </div>
                     <h3>匿名审稿人</h3>
                     <p class="speaker-title">大会荣誉主席</p>
-                    <p class="speaker-desc">顶会拒稿第一人，擅长从任何角度找到论文的拒稿理由，手握“创新性不足”万能模板，拒稿率常年保持100%。</p>
+                    <p class="speaker-desc">学术圈拒稿第一人，擅长从任何角度找到论文的拒稿理由，手握“创新性不足”万能模板，拒稿率常年保持100%。</p>
                 </div>
                 <div class="speaker-card fade-in">
                     <div class="speaker-avatar">
@@ -264,15 +269,29 @@
     <section id="papers" class="section">
         <div class="container">
             <h2 class="section-title fade-in">
-                <i class="fas fa-book-open"></i> 录用论文精选
+                <i class="fas fa-book-open"></i> 录用论文归档
             </h2>
             <div class="tabs fade-in">
-                <button class="tab-btn active" data-tab="2026">2026年</button>
-                <button class="tab-btn" data-tab="2025">2025年</button>
-                <button class="tab-btn" data-tab="2024">2024年</button>
-                <button class="tab-btn" data-tab="2023">2023年</button>
+                <button class="tab-btn active" data-tab="2026">2026届（征稿中）</button>
+                <button class="tab-btn" data-tab="2025">2025届（首届）</button>
             </div>
+            <!-- 2026届预留 -->
             <div class="tab-content active" id="2026">
+                <div class="papers-list">
+                    <div class="paper-item">
+                        <div class="paper-title">
+                            <i class="fas fa-file-alt"></i>
+                            2026届录用论文即将公布，敬请期待
+                        </div>
+                        <div class="paper-authors">投稿通道持续开放中</div>
+                        <div class="paper-abstract">
+                            所有2026届录用论文将同步归档至 <code>/submissions/2026/</code> 目录，永久开放访问。
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 2025届首届，内置示例论文，对应投稿目录 -->
+            <div class="tab-content" id="2025">
                 <div class="papers-list">
                     <div class="paper-item">
                         <div class="paper-title">
@@ -281,68 +300,11 @@
                         </div>
                         <div class="paper-authors">ChatGPT, GitHub Copilot, 匿名科研狗</div>
                         <div class="paper-abstract">
-                            摘要：本文提出了一种基于大语言模型的顶会论文全自动量产系统，仅需输入一个关键词，即可生成结构完整、逻辑通顺、实验丰富的论文，经测试，该系统生成的论文在ICML、NeurIPS等顶会的录用率高达0.02%，远超人工投稿水平。
+                            摘要：本文提出了一种基于大语言模型的顶会论文全自动量产系统，仅需输入一个关键词，即可生成结构完整、逻辑通顺、实验丰富的论文，经测试，该系统生成的论文在各大顶会的录用率高达0.02%，远超人工投稿水平。
                         </div>
-                    </div>
-                    <div class="paper-item">
-                        <div class="paper-title">
-                            <i class="fas fa-file-alt"></i>
-                            《随机种子对深度学习模型录用率的影响研究》
-                        </div>
-                        <div class="paper-authors">调参侠, 炼丹师, 毕业困难户</div>
-                        <div class="paper-abstract">
-                            摘要：本文通过10000组对照实验，系统研究了随机种子对模型性能、论文录用率的影响，实验结果表明，当随机种子为42时，论文的录用率比其他种子高出37%，该发现为深度学习领域的实验设计提供了全新的指导思路。
-                        </div>
-                    </div>
-                    <div class="paper-item">
-                        <div class="paper-title">
-                            <i class="fas fa-file-alt"></i>
-                            《基于万能模板的顶会拒稿Rebuttal生成方法》
-                        </div>
-                        <div class="paper-authors">被拒稿100次的博士, 导师</div>
-                        <div class="paper-abstract">
-                            摘要：针对顶会审稿人提出的各类无理拒稿理由，本文提出了一种万能Rebuttal生成模板，能够在不补充任何实验的情况下，有理有据地反驳所有审稿意见，经测试，该模板的反驳成功率为0%，但能有效缓解作者的焦虑情绪。
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="tab-content" id="2025">
-                <div class="papers-list">
-                    <div class="paper-item">
-                        <div class="paper-title">
-                            <i class="fas fa-file-alt"></i>
-                            《关于“创新性不足”的系统性定义与规避方法》
-                        </div>
-                        <div class="paper-authors">匿名科研人</div>
-                    </div>
-                    <div class="paper-item">
-                        <div class="paper-title">
-                            <i class="fas fa-file-alt"></i>
-                            《如何用10行代码实现一个SOTA模型》
-                        </div>
-                        <div class="paper-authors">GitHub Copilot</div>
-                    </div>
-                </div>
-            </div>
-            <div class="tab-content" id="2024">
-                <div class="papers-list">
-                    <div class="paper-item">
-                        <div class="paper-title">
-                            <i class="fas fa-file-alt"></i>
-                            《AI审稿人vs人类审稿人：拒稿能力对比研究》
-                        </div>
-                        <div class="paper-authors">被AI拒稿的博士</div>
-                    </div>
-                </div>
-            </div>
-            <div class="tab-content" id="2023">
-                <div class="papers-list">
-                    <div class="paper-item">
-                        <div class="paper-title">
-                            <i class="fas fa-file-alt"></i>
-                            《ICML：灌水论文的新家园》
-                        </div>
-                        <div class="paper-authors">大会组委会</div>
+                        <a href="/submissions/2025/paper-001.html" class="paper-link">
+                            <i class="fas fa-external-link-alt"></i> 查看全文
+                        </a>
                     </div>
                 </div>
             </div>
@@ -353,7 +315,7 @@
     <section id="submit" class="section section-alt">
         <div class="container">
             <h2 class="section-title fade-in">
-                <i class="fas fa-paper-plane"></i> 投稿流程
+                <i class="fas fa-paper-plane"></i> 投稿指南
             </h2>
             <div class="steps">
                 <div class="step-item fade-in">
@@ -364,7 +326,7 @@
                 <div class="step-item fade-in">
                     <div class="step-num">2</div>
                     <h3>提交投稿</h3>
-                    <p>在截止日期前上传PDF至投稿系统，无需填写作者信息、伦理声明，系统自动接收所有投稿。</p>
+                    <p>在截止日期前，将论文PDF与HTML详情页提交至仓库 <code>/submissions/2026/</code> 目录，发起PR即可完成投稿。</p>
                 </div>
                 <div class="step-item fade-in">
                     <div class="step-num">3</div>
@@ -373,8 +335,8 @@
                 </div>
                 <div class="step-item fade-in">
                     <div class="step-num">4</div>
-                    <h3>接收结果</h3>
-                    <p>系统随机抽取录用论文，无论审稿意见好坏，都有平等的录用机会，未录用论文自动进入下一届会议。</p>
+                    <h3>论文归档</h3>
+                    <p>录用论文将合并至仓库主分支，在本站永久展示、永久可访问，未录用论文可自动进入下一届投稿。</p>
                 </div>
             </div>
         </div>
@@ -410,7 +372,7 @@
             <div class="faq-container">
                 <div class="faq-item fade-in">
                     <button class="faq-question">
-                        <span>ICML会议的录用标准是什么？</span>
+                        <span>ICMLpaper会议的录用标准是什么？</span>
                         <i class="fas fa-chevron-down"></i>
                     </button>
                     <div class="faq-answer">
@@ -432,25 +394,25 @@
                         <i class="fas fa-chevron-down"></i>
                     </button>
                     <div class="faq-answer">
-                        <p>没有上限，页数越多、参考文献越多，录用概率越高。我们建议至少10页正文+50篇参考文献，其中至少30篇引用ICML往届录用论文，可显著提升录用运气。</p>
+                        <p>没有上限，页数越多、参考文献越多，录用概率越高。我们建议至少10页正文+50篇参考文献，其中至少30篇引用ICMLpaper往届录用论文，可显著提升录用运气。</p>
                     </div>
                 </div>
                 <div class="faq-item fade-in">
                     <button class="faq-question">
-                        <span>被拒稿了可以申诉吗？</span>
+                        <span>录用的论文会保存在哪里？</span>
                         <i class="fas fa-chevron-down"></i>
                     </button>
                     <div class="faq-answer">
-                        <p>不可以。我们的拒稿结果是最终决定，申诉只会收到“感谢您的反馈，祝您下次好运”的统一回复。但所有被拒稿的论文，都可以自动获得下一届会议的投稿资格。</p>
+                        <p>所有录用论文都会永久归档在本站 <code>/submissions/年份/</code> 目录下，生成专属的HTML详情页，永久开放访问，支持直接引用和分享。</p>
                     </div>
                 </div>
                 <div class="faq-item fade-in">
                     <button class="faq-question">
-                        <span>录用的论文会被哪些数据库收录？</span>
+                        <span>本会议和官方ICML有什么关系？</span>
                         <i class="fas fa-chevron-down"></i>
                     </button>
                     <div class="faq-answer">
-                        <p>所有录用论文都会被收录到arXiv预印本平台，作者可自行上传，我们不提供任何收录证明，也不保证任何学校或单位认可该会议的学术价值。</p>
+                        <p>本网站纯属学术圈恶搞娱乐，与官方International Conference on Machine Learning（ICML）无任何关联，不代表官方立场，仅用于科研人自娱自乐。</p>
                     </div>
                 </div>
             </div>
@@ -484,7 +446,6 @@
                     <div class="sponsor-logos">
                         <div class="sponsor-logo">Python</div>
                         <div class="sponsor-logo">PyTorch</div>
-                        <div class="sponsor-logo">TensorFlow</div>
                         <div class="sponsor-logo">LaTeX</div>
                     </div>
                 </div>
@@ -496,33 +457,32 @@
     <footer class="footer">
         <div class="container footer-content">
             <div class="footer-col">
-                <h4>关于ICML</h4>
-                <p>International Conference of Machine Learning Rubbish，全球最水的人工智能学术会议，致力于让每一篇灌水论文都有处可去。</p>
+                <h4>关于ICMLpaper</h4>
+                <p>International Conference of Machine Learning Paper Rubbish，机器学习灌水论文专属学术社区，致力于让每一篇灌水论文都有处可去。</p>
             </div>
             <div class="footer-col">
                 <h4>快速链接</h4>
                 <ul>
                     <li><a href="#submit">投稿指南</a></li>
                     <li><a href="#dates">重要日期</a></li>
-                    <li><a href="#papers">录用论文</a></li>
+                    <li><a href="#papers">论文归档</a></li>
                     <li><a href="#faq">常见问题</a></li>
                 </ul>
             </div>
             <div class="footer-col">
-                <h4>联系我们</h4>
+                <h4>论文归档</h4>
                 <ul>
-                    <li>投稿邮箱：icml-rubbish@example.com</li>
-                    <li>官方GitHub：github.com/icmlpaper</li>
+                    <li><a href="/submissions/2025/">2025届论文</a></li>
+                    <li><a href="/submissions/2026/">2026届论文</a></li>
                 </ul>
                 <div class="social-links">
                     <a href="#"><i class="fab fa-github"></i></a>
                     <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-linkedin"></i></a>
                 </div>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 ICML: International Conference of Machine Learning Rubbish. 本网站纯属恶搞，与官方ICML无任何关系。</p>
+            <p>&copy; 2026 ICMLpaper. 本网站纯属学术圈恶搞娱乐，与官方ICML无任何关系。</p>
         </div>
     </footer>
 
