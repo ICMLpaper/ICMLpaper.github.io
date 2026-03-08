@@ -39,6 +39,9 @@
                 <button id="theme-toggle" class="icon-btn" title="切换主题">
                     <i class="fas fa-moon"></i>
                 </button>
+                <button id="lang-toggle" class="icon-btn lang-btn" title="Switch to English">
+                    <i class="fas fa-language"></i><span class="lang-label">EN</span>
+                </button>
                 <button id="menu-toggle" class="icon-btn menu-btn" title="菜单">
                     <i class="fas fa-bars"></i>
                 </button>
@@ -629,11 +632,17 @@
             });
         });
 
-        // 主题切换
-        const themeToggle = document.getElementById('theme-toggle');
+        
+        const PAGE_LANG = "zh";
+        const LANG_TARGET = "index-en.html";
+        const THEME_KEY = "icmlpaper-theme";
+        const LANG_KEY = "icmlpaper-lang";
         const html = document.documentElement;
-        themeToggle.addEventListener('click', () => {
-            html.classList.toggle('dark-theme');
+        const themeToggle = document.getElementById('theme-toggle');
+        const langToggle = document.getElementById('lang-toggle');
+
+        function updateThemeIcon() {
+            if (!themeToggle) return;
             const icon = themeToggle.querySelector('i');
             if (html.classList.contains('dark-theme')) {
                 icon.classList.remove('fa-moon');
@@ -642,7 +651,44 @@
                 icon.classList.remove('fa-sun');
                 icon.classList.add('fa-moon');
             }
-        });
+        }
+
+        function updateLangToggle() {
+            if (!langToggle) return;
+            const label = langToggle.querySelector('.lang-label');
+            if (label) label.textContent = PAGE_LANG === 'zh' ? 'EN' : '中';
+            langToggle.setAttribute('title', PAGE_LANG === 'zh' ? 'Switch to English' : '切换到中文');
+        }
+
+        (function initPreferences() {
+            const savedTheme = localStorage.getItem(THEME_KEY);
+            if (savedTheme === 'dark') {
+                html.classList.add('dark-theme');
+            }
+            updateThemeIcon();
+            updateLangToggle();
+            const savedLang = localStorage.getItem(LANG_KEY);
+            if (savedLang && savedLang !== PAGE_LANG) {
+                location.replace(LANG_TARGET + location.hash);
+            }
+        })();
+
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                html.classList.toggle('dark-theme');
+                localStorage.setItem(THEME_KEY, html.classList.contains('dark-theme') ? 'dark' : 'light');
+                updateThemeIcon();
+            });
+        }
+
+        if (langToggle) {
+            langToggle.addEventListener('click', () => {
+                const nextLang = PAGE_LANG === 'zh' ? 'en' : 'zh';
+                localStorage.setItem(LANG_KEY, nextLang);
+                location.href = LANG_TARGET + location.hash;
+            });
+        }
+
 
         // 平滑滚动
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
