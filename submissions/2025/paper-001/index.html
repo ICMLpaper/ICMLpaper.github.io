@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RubbishLM: 面向顶会投稿的端到端论文量产系统 | ICMLpaper 2025</title>
+    <!-- 外部资源（和主站完全统一） -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.bootcdn.net/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/Chart.js/4.4.8/chart.umd.min.js"></script>
+    <!-- 主站样式复用 -->
+    <link rel="stylesheet" href="../../../../style.css">
+    <!-- 网站图标 -->
+    <link rel="icon" href="../../../../favicon.svg" type="image/svg+xml">
+    <!-- 论文专属样式 -->
+    <style>
+        /* 论文页面核心布局 */
+        .paper-wrapper {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        /* 侧边目录导航 */
+        .paper-sidebar {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        .sidebar-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .toc-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .toc-link {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.4;
+            transition: var(--transition);
+            display: block;
+            padding: 0.3rem 0.5rem;
+            border-radius: var(--radius-sm);
+        }
+        .toc-link:hover, .toc-link.active {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        .dark-theme .toc-link:hover, .dark-theme .toc-link.active {
+            background: var(--primary-dark);
+        }
+        /* 论文操作栏 */
+        .paper-actions {
+            margin-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        .action-btn {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--bg-main);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+        .action-btn.primary {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        /* 论文主体容器 */
+        .paper-main {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 3rem 4rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        /* 论文头部 */
+        .paper-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+        }
+        .accept-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: #10b981;
+            color: white;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .paper-header h1 {
+            font-size: 1.8rem;
+            line-height: 1.4;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        .authors {
+            font-size: 1rem;
+            margin-bottom: 0.8rem;
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+        .affiliations {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+        .paper-meta {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        /* 摘要模块 */
+        .abstract-block {
+            margin-bottom: 2rem;
+        }
+        .abstract-block h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+        .abstract-block p {
+            text-align: justify;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            text-indent: 2em;
+            color: var(--text-secondary);
+        }
+        /* 关键词 */
+        .keywords-block {
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+        .keywords-block strong {
+            color: var(--text-primary);
+        }
+        /* 正文排版 */
+        .paper-content h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 2rem 0 0.8rem;
+            color: var(--text-primary);
+            scroll-margin-top: 100px;
+        }
+        .paper-content h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 1.2rem 0 0.6rem;
+            color: var(--text-primary);
+            scroll-margin-top: 100px;
+        }
+        .paper-content p {
+            text-align: justify;
+            line-height: 1.7;
+            margin-bottom: 0.8rem;
+            font-size: 0.98rem;
+            color: var(--text-secondary);
+        }
+        /* 公式样式 */
+        .formula-wrapper {
+            margin: 1rem 0;
+            text-align: center;
+            overflow-x: auto;
+        }
+        .formula-number {
+            float: right;
+            color: var(--text-secondary);
+        }
+        /* 图表容器 */
+        .figure-wrapper {
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+        .figure-container {
+            max-width: 100%;
+            margin: 0 auto;
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: var(--bg-main);
+        }
+        .figure-caption {
+            margin-top: 0.8rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            text-align: center;
+        }
+        /* 表格样式 */
+        .paper-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.2rem 0;
+            font-size: 0.9rem;
+        }
+        .paper-table th, .paper-table td {
+            border: 1px solid var(--border);
+            padding: 0.6rem;
+            text-align: center;
+        }
+        .paper-table th {
+            background-color: var(--bg-alt);
+            font-weight: 600;
+        }
+        .table-caption {
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+        /* 引用格式 */
+        .citation-block {
+            background: var(--bg-alt);
+            border-radius: var(--radius);
+            padding: 1.2rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--primary);
+        }
+        .citation-block h3 {
+            margin-top: 0;
+            margin-bottom: 0.8rem;
+        }
+        .citation-code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            overflow-x: auto;
+        }
+        /* 参考文献 */
+        .reference-list {
+            margin-top: 1.5rem;
+        }
+        .reference-list li {
+            margin-bottom: 0.8rem;
+            line-height: 1.6;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            padding-left: 2em;
+            text-indent: -2em;
+        }
+        /* 移动端适配 */
+        @media (max-width: 1024px) {
+            .paper-wrapper {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+            .paper-sidebar {
+                position: static;
+                margin-bottom: 1rem;
+            }
+            .paper-main {
+                padding: 1.5rem 1rem;
+            }
+            .paper-header h1 {
+                font-size: 1.4rem;
+            }
+            .paper-meta {
+                flex-direction: column;
+                gap: 0.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏（和主站完全统一） -->
+    <header class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <svg class="logo-img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="currentColor" d="M256 448l32 320h384l32-320H256zM736 128H576l-32-32H416l-32 32H224v64h512v-64zM192 192v384c0 35.3 28.7 64 64 64h448c35.3 0 64-28.7 64-64V192H192z"/>
+                </svg>
+                <a href="../../../../index.html" class="conf-name">ICMLpaper</a>
+            </div>
+            <nav class="nav-links">
+                <a href="../../../../index.html#home" class="nav-link">首页</a>
+                <a href="../../../../index.html#papers" class="nav-link active">论文归档</a>
+                <a href="../../../../index.html#submit" class="nav-link">投稿指南</a>
+            </nav>
+            <div class="nav-actions">
+                <button id="theme-toggle" class="icon-btn" title="切换主题">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 论文主体布局 -->
+    <section class="section">
+        <div class="paper-wrapper">
+            <!-- 侧边目录+操作栏 -->
+            <aside class="paper-sidebar">
+                <div class="sidebar-title">
+                    <i class="fas fa-list"></i> 论文目录
+                </div>
+                <ul class="toc-list">
+                    <li><a href="#abstract" class="toc-link">摘要</a></li>
+                    <li><a href="#introduction" class="toc-link">1. 引言</a></li>
+                    <li><a href="#related-work" class="toc-link">2. 相关工作</a></li>
+                    <li><a href="#methodology" class="toc-link">3. 方法论</a></li>
+                    <li><a href="#experiments" class="toc-link">4. 实验</a></li>
+                    <li><a href="#limitations" class="toc-link">5. 局限性</a></li>
+                    <li><a href="#ethics" class="toc-link">6. 伦理声明</a></li>
+                    <li><a href="#conclusion" class="toc-link">7. 结论</a></li>
+                    <li><a href="#acknowledgements" class="toc-link">致谢</a></li>
+                    <li><a href="#references" class="toc-link">参考文献</a></li>
+                </ul>
+                <div class="paper-actions">
+                    <a href="./assets/paper.pdf" class="action-btn primary" target="_blank">
+                        <i class="fas fa-file-pdf"></i> 下载论文PDF
+                    </a>
+                    <a href="./supplement/" class="action-btn">
+                        <i class="fas fa-file-alt"></i> 补充材料
+                    </a>
+                    <a href="https://github.com/your-repo/rubbishlm" class="action-btn" target="_blank">
+                        <i class="fab fa-github"></i> 代码仓库
+                    </a>
+                </div>
+            </aside>
+
+            <!-- 论文正文 -->
+            <main class="paper-main">
+                <!-- 论文头部 -->
+                <div class="paper-header">
+                    <span class="accept-badge">ICMLpaper 2025 录用论文</span>
+                    <h1>RubbishLM: 面向顶会投稿的端到端论文量产系统</h1>
+                    <div class="authors">
+                        ChatGPT<sup>1</sup>, GitHub Copilot<sup>2</sup>, 匿名科研狗<sup>3,*</sup>
+                    </div>
+                    <div class="affiliations">
+                        <sup>1</sup> OpenAI 灌水论文量产实验室 | <sup>2</sup> GitHub 代码玄学研究所<br>
+                        <sup>3</sup> 灌水大学人工智能学院 博士点<br>
+                        <sup>*</sup> 通讯作者：rubbish-paper@example.com
+                    </div>
+                    <div class="paper-meta">
+                        <span><strong>录用届数：</strong>ICMLpaper 2025 首届</span>
+                        <span><strong>归档时间：</strong>2025年6月1日</span>
+                        <span><strong>CCS分类：</strong>Computing methodologies → Machine learning</span>
+                    </div>
+                </div>
+
+                <!-- 摘要 -->
+                <div id="abstract" class="abstract-block">
+                    <h2>Abstract | 摘要</h2>
+                    <p>
+                        随着人工智能顶会投稿量连年激增，科研工作者面临着“内卷严重、录用率跌破1%、写作耗时远超科研本身”的行业痛点。现有学术写作工具仅能实现单句补全、格式排版等辅助功能，无法完成从关键词到可投稿PDF的端到端全流程自动化。针对这一问题，本文提出了<b>RubbishLM</b>——全球首个面向顶会投稿的论文量产系统，整合了大纲智能生成、相关工作缝合、方法论伪创新构建、实验结果合理编造、审稿人偏好对齐五大核心模块。基于百万级顶会论文数据集RubbishSet微调后，系统生成的论文在各大顶会的录用率达到0.021%，是人工投稿平均水平的2.1倍，同时生成效率提升100倍，查重率低至2.1%。本研究为科研工作者实现“灌水论文自由”提供了完整的解决方案，代码与模型已开源。
+                    </p>
+                </div>
+
+                <!-- 关键词 -->
+                <div class="keywords-block">
+                    <strong>关键词：</strong>大语言模型、学术论文量产、灌水学术、审稿人偏好对齐、玄学调参、顶会投稿
+                </div>
+
+                <!-- 引用格式 -->
+                <div class="citation-block">
+                    <h3><i class="fas fa-quote-left"></i> 引用格式</h3>
+                    <pre class="citation-code">
+@inproceedings{rubbishlm2025,
+  title={RubbishLM: 面向顶会投稿的端到端论文量产系统},
+  author={ChatGPT and GitHub Copilot and 匿名科研狗},
+  booktitle={International Conference of Machine Learning Paper Rubbish},
+  year={2025}
+}
+                    </pre>
+                </div>
+
+                <!-- 正文内容 -->
+                <div class="paper-content">
+                    <h2 id="introduction">1. Introduction | 引言</h2>
+                    <p>
+                        近年来，机器学习顶会的投稿量呈现指数级增长趋势：2025年ICML总投稿量突破22万篇，最终录用率仅为0.98%，首次跌破1%大关。在如此激烈的内卷环境下，科研工作者平均需要花费6-8个月完成一篇论文的写作与修改，其中70%的时间消耗在格式调整、参考文献凑数、迎合审稿人偏好等非科研核心工作上，严重挤压了原创研究的时间与精力。
+                    </p>
+                    <p>
+                        与此同时，现有学术写作工具存在明显的局限性：SciBERT等学术预训练模型仅能实现单句文本生成，无法保证整篇论文的逻辑连贯性；GPT-4o等通用大语言模型虽能生成完整段落，但未针对顶会审稿人的偏好进行优化，生成内容极易被挑出“创新性不足”、“实验不充分”等漏洞；Overleaf等工具仅能解决格式排版问题，无法对论文内容本身提供实质性帮助。
+                    </p>
+                    <p>
+                        为了彻底解决上述行业痛点，本文提出了端到端的顶会论文量产系统RubbishLM，核心贡献如下：
+                    </p>
+                    <p>
+                        1. 提出首个从关键词输入到可投稿PDF输出的全自动化顶会论文生成框架，无需人工干预即可完成符合顶会格式要求的完整论文。<br>
+                        2. 设计了<b>审稿人偏好对齐模块（Reviewer-Aligned Module, RAM）</b>，基于120万条公开审稿意见训练，自动生成符合审稿人预期的内容，将拒稿风险降低99%。<br>
+                        3. 构建了<b>RubbishSet</b>数据集，涵盖2015-2025年ICML、NeurIPS、ICLR三大顶会所有录用论文，共120万篇高质量标注数据，开源供社区使用。<br>
+                        4. 大规模对照实验表明，RubbishLM生成的论文顶会录用率达0.021%，远超GPT-4o等基线模型，同时生成效率提升100倍，查重率低至2.1%。
+                    </p>
+
+                    <h2 id="related-work">2. Related Work | 相关工作</h2>
+                    <h3>2.1 大语言模型与学术写作</h3>
+                    <p>
+                        预训练语言模型在学术文本生成领域已有广泛探索。Beltagy等人<sup>[1]</sup>提出了SciBERT，基于科学文献预训练，显著提升了学术文本的理解与生成能力，但仅能实现短文本生成，无法完成整篇论文的连贯创作。Kuhn等人<sup>[2]</sup>探索了GPT-4在ACL论文写作中的应用，验证了大语言模型生成学术内容的可行性，但未针对顶会投稿的特定需求进行优化，无法解决审稿人拒稿的核心痛点。
+                    </p>
+                    <h3>2.2 审稿人偏好建模</h3>
+                    <p>
+                        针对顶会审稿的随机性问题，已有研究开始探索审稿人偏好的建模。Kang等人<sup>[3]</sup>提出了基于情感分析的审稿意见预测模型，能够预判审稿人的正面/负面倾向，但无法从根源上生成符合审稿人预期的内容。Sculley等人<sup>[4]</sup>分析了机器学习顶会的10万条审稿意见，总结出“创新性不足”、“实验不充分”、“相关工作缺失”三大万能拒稿理由，为本研究的审稿人对齐模块提供了核心依据。
+                    </p>
+                    <h3>2.3 本文与现有工作的区别</h3>
+                    <p>
+                        与现有工作相比，本文首次实现了顶会论文的端到端全流程自动化生成，同时创新性地引入了审稿人偏好对齐模块，从内容创作的根源上降低拒稿风险，而非事后预测审稿意见。此外，本文构建的RubbishSet数据集是目前最大的顶会论文数据集，为后续学术写作相关研究提供了高质量的基础数据。
+                    </p>
+
+                    <h2 id="methodology">3. Methodology | 方法论</h2>
+                    <p>
+                        RubbishLM的整体架构如图1所示，分为5个核心模块，完整实现从关键词到可投稿PDF的全流程自动化。整体生成流程为：关键词输入 → 大纲智能生成 → 分模块内容填充 → 审稿人偏好对齐 → 实验结果生成 → 格式渲染 → 输出PDF。
+                    </p>
+
+                    <!-- 模型架构图（SVG矢量，适配双主题） -->
+                    <div class="figure-wrapper">
+                        <div class="figure-container">
+                            <svg width="100%" height="220" viewBox="0 0 800 220" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color:#165DFF;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                                <!-- 背景 -->
+                                <rect width="800" height="220" fill="var(--bg-main)" />
+                                <!-- 模块框 -->
+                                <g>
+                                    <rect x="50" y="80" width="120" height="60" rx="8" fill="url(#grad)" stroke="var(--border)" stroke-width="1" />
+                                    <text x="110" y="115" text-anchor="middle" fill="white" font-size="14" font-weight="600">大纲生成</text>
+                                    <text x="110" y="135" text-anchor="middle" fill="white" font-size="12">Outline Generation</text>
+                                </g>
+                                <g>
+                                    <rect x="200" y="80" width="120" height="60" rx="8" fill="url(#grad)" stroke="var(--border)" stroke-width="1" />
+                                    <text x="260" y="115" text-anchor="middle" fill="white" font-size="14" font-weight="600">相关工作缝合</text>
+                                    <text x="260" y="135" text-anchor="middle" fill="white" font-size="12">Related Work</text>
+                                </g>
+                                <g>
+                                    <rect x="350" y="80" width="120" height="60" rx="8" fill="url(#grad)" stroke="var(--border)" stroke-width="1" />
+                                    <text x="410" y="115" text-anchor="middle" fill="white" font-size="14" font-weight="600">RAM模块</text>
+                                    <text x="410" y="135" text-anchor="middle" fill="white" font-size="12">Reviewer Aligned</text>
+                                </g>
+                                <g>
+                                    <rect x="500" y="80" width="120" height="60" rx="8" fill="url(#grad)" stroke="var(--border)" stroke-width="1" />
+                                    <text x="560" y="115" text-anchor="middle" fill="white" font-size="14" font-weight="600">RFM模块</text>
+                                    <text x="560" y="135" text-anchor="middle" fill="white" font-size="12">Result Fabrication</text>
+                                </g>
+                                <!-- 箭头 -->
+                                <line x1="170" y1="110" x2="200" y2="110" stroke="var(--text-secondary)" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="320" y1="110" x2="350" y2="110" stroke="var(--text-secondary)" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="470" y1="110" x2="500" y2="110" stroke="var(--text-secondary)" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="620" y1="110" x2="650" y2="110" stroke="var(--text-secondary)" stroke-width="2" marker-end="url(#arrow)" />
+                                <!-- 输入输出 -->
+                                <text x="30" y="110" text-anchor="middle" fill="var(--text-primary)" font-size="14" font-weight="600">关键词输入</text>
+                                <text x="770" y="110" text-anchor="middle" fill="var(--text-primary)" font-size="14" font-weight="600">论文输出</text>
+                                <!-- 标题 -->
+                                <text x="400" y="40" text-anchor="middle" fill="var(--text-primary)" font-size="18" font-weight="700">图1 RubbishLM整体架构图</text>
+                                <!-- 箭头定义 -->
+                                <defs>
+                                    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                                        <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--text-secondary)" />
+                                    </marker>
+                                </defs>
+                            </svg>
+                        </div>
+                        <p class="figure-caption">图1 RubbishLM端到端论文量产系统整体架构</p>
+                    </div>
+
+                    <h3>3.1 大纲智能生成模块</h3>
+                    <p>
+                        基于链式思维（Chain-of-Thought, CoT），本模块根据输入的关键词，自动生成符合顶会规范的论文大纲，包含引言、相关工作、方法论、实验、结论、参考文献等完整章节。大纲生成的概率模型如下：
+                    </p>
+                    <div class="formula-wrapper">
+                        \[ P(O|K) = \prod_{i=1}^N P(o_i | o_1, o_2, ..., o_{i-1}, K) \]
+                        <span class="formula-number">(1)</span>
+                    </div>
+                    <p>
+                        其中，\( O = \{o_1, o_2, ..., o_N\} \) 为生成的大纲，\( K \) 为输入的关键词，\( N \) 为大纲的章节数量。模型会自动为每个章节生成子标题，保证逻辑连贯，符合顶会的写作范式。
+                    </p>
+
+                    <h3>3.2 审稿人偏好对齐模块（RAM）</h3>
+                    <p>
+                        本模块是RubbishLM的核心创新点，基于120万条公开审稿意见训练，学习审稿人的评分偏好，自动生成符合预期的内容。我们将审稿人的录用评分建模为三个核心维度的加权和：
+                    </p>
+                    <div class="formula-wrapper">
+                        \[ \text{ReviewerScore}(C) = \alpha \cdot \text{Novelty}(C) + \beta \cdot \text{Technicality}(C) + \gamma \cdot \text{RelatedWork}(C) \]
+                        <span class="formula-number">(2)</span>
+                    </div>
+                    <p>
+                        其中，\( C \) 为论文内容，\( \alpha, \beta, \gamma \) 为通过审稿数据学习到的权重（分别为0.4、0.35、0.25）。\( \text{Novelty}(C) \) 为伪创新点生成模块，自动为论文提炼3-4个“看起来有创新”的贡献点；\( \text{Technicality}(C) \) 为公式复杂度优化模块，自动为方法论添加足够复杂的公式，提升论文的技术观感；\( \text{RelatedWork}(C) \) 为相关工作引用模块，自动引用足够多的顶会论文，避免“相关工作缺失”的拒稿理由。
+                    </p>
+
+                    <h3>3.3 实验结果合理编造模块（RFM）</h3>
+                    <p>
+                        本模块自动生成符合顶会预期的实验结果，保证生成的结果刚好超过现有SOTA模型0.1-0.5个百分点，既不会过于离谱，又能体现“创新性”。实验结果的约束公式如下：
+                    </p>
+                    <div class="formula-wrapper">
+                        \[ \text{Acc}(M) = \max_{B \in \text{Baselines}} \text{Acc}(B) + \epsilon, \quad \epsilon \in [0.1, 0.5] \]
+                        <span class="formula-number">(3)</span>
+                    </div>
+                    <p>
+                        其中，\( M \) 为本文提出的模型，\( B \) 为基线模型集合，\( \epsilon \) 为刚好超过SOTA的微小增量。同时，模块会自动生成平滑的loss曲线、消融实验表格，保证实验部分的完整性与专业性。
+                    </p>
+
+                    <h2 id="experiments">4. Experiments | 实验</h2>
+                    <h3>4.1 实验设置</h3>
+                    <p>
+                        <strong>数据集：</strong> 采用本文构建的RubbishSet数据集，包含2015-2025年ICML、NeurIPS、ICLR三大顶会的120万篇录用论文，按照8:1:1的比例划分为训练集、验证集、测试集。
+                    </p>
+                    <p>
+                        <strong>基线模型：</strong> 选取当前主流的学术写作模型作为基线，包括SciBERT、Gemini Advanced、Claude 3 Opus、GPT-4o，所有模型均采用默认参数，保证实验的公平性。
+                    </p>
+                    <p>
+                        <strong>评估指标：</strong> 采用4个核心指标评估模型性能：① 录用率（Acceptance Rate, AR）：投稿至顶会后的录用概率；② 生成速度（Tokens Per Second, TPS）：每秒生成的token数量；③ 查重率（Duplication Rate, DR）：知网/Google Scholar的查重结果；④ 审稿人评分（Reviewer Score, RS）：10分制的审稿人平均评分。
+                    </p>
+                    <p>
+                        <strong>实现细节：</strong> RubbishLM基于Llama 3 70B基座模型，在RubbishSet上进行微调，训练硬件为4张NVIDIA A100 80G GPU，训练步数100步，batch size 32，学习率2e-5，采用AdamW优化器。
+                    </p>
+
+                    <h3>4.2 主实验结果</h3>
+                    <p>
+                        主实验结果如表1所示。可以看到，RubbishLM在所有核心指标上均超过了现有基线模型：录用率达到0.021%，是GPT-4o的1.4倍，是人工投稿平均水平的2.1倍；生成速度达到92.7 tokens/s，远超GPT-4o的62.3 tokens/s；查重率低至2.1%，远低于所有基线模型；审稿人平均评分达到6.2/10，是唯一超过6分的模型。
+                    </p>
+                    <p class="table-caption">表1 主实验结果对比</p>
+                    <table class="paper-table">
+                        <thead>
+                            <tr>
+                                <th>模型</th>
+                                <th>录用率 AR↑</th>
+                                <th>生成速度 TPS↑</th>
+                                <th>查重率 DR↓</th>
+                                <th>审稿人评分 RS↑</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>SciBERT</td>
+                                <td>0.001%</td>
+                                <td>120.5</td>
+                                <td>12.3%</td>
+                                <td>1.2/10</td>
+                            </tr>
+                            <tr>
+                                <td>Gemini Advanced</td>
+                                <td>0.008%</td>
+                                <td>85.2</td>
+                                <td>5.6%</td>
+                                <td>3.5/10</td>
+                            </tr>
+                            <tr>
+                                <td>Claude 3 Opus</td>
+                                <td>0.011%</td>
+                                <td>78.6</td>
+                                <td>4.2%</td>
+                                <td>4.1/10</td>
+                            </tr>
+                            <tr>
+                                <td>GPT-4o</td>
+                                <td>0.015%</td>
+                                <td>62.3</td>
+                                <td>3.8%</td>
+                                <td>4.8/10</td>
+                            </tr>
+                            <tr>
+                                <td><strong>RubbishLM (Ours)</strong></td>
+                                <td><strong>0.021%</strong></td>
+                                <td><strong>92.7</strong></td>
+                                <td><strong>2.1%</strong></td>
+                                <td><strong>6.2/10</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- 训练Loss曲线图（可交互Chart.js） -->
+                    <div class="figure-wrapper">
+                        <p class="figure-caption">图2 模型训练Loss曲线（完美下降，无震荡）</p>
+                        <div class="figure-container">
+                            <canvas id="lossCurve" width="800" height="300"></canvas>
+                        </div>
+                    </div>
+
+                    <h3>4.3 消融实验</h3>
+                    <p>
+                        为了验证每个模块的有效性，我们进行了消融实验，结果如表2所示。可以看到，每个模块都对最终性能有正向提升，其中审稿人偏好对齐模块（RAM）的提升最为显著，录用率从0.015%提升至0.019%，审稿人评分从4.8/10提升至5.8/10，证明了该模块的核心价值。实验结果编造模块（RFM）也带来了明显的性能提升，验证了合理的实验结果对录用率的重要性。
+                    </p>
+                    <p class="table-caption">表2 消融实验结果</p>
+                    <table class="paper-table">
+                        <thead>
+                            <tr>
+                                <th>模型配置</th>
+                                <th>录用率 AR↑</th>
+                                <th>审稿人评分 RS↑</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>基线（GPT-4o）</td>
+                                <td>0.015%</td>
+                                <td>4.8/10</td>
+                            </tr>
+                            <tr>
+                                <td>+ 大纲生成模块</td>
+                                <td>0.016%</td>
+                                <td>5.0/10</td>
+                            </tr>
+                            <tr>
+                                <td>+ 审稿人对齐模块 RAM</td>
+                                <td>0.019%</td>
+                                <td>5.8/10</td>
+                            </tr>
+                            <tr>
+                                <td>+ 结果编造模块 RFM</td>
+                                <td>0.020%</td>
+                                <td>6.0/10</td>
+                            </tr>
+                            <tr>
+                                <td>+ 全模块（Ours）</td>
+                                <td><strong>0.021%</strong></td>
+                                <td><strong>6.2/10</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- 消融实验柱状图（可交互） -->
+                    <div class="figure-wrapper">
+                        <p class="figure-caption">图3 消融实验审稿人评分对比</p>
+                        <div class="figure-container">
+                            <canvas id="ablationBar" width="800" height="300"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- SOTA对比雷达图 -->
+                    <div class="figure-wrapper">
+                        <p class="figure-caption">图4 各模型核心能力雷达图对比</p>
+                        <div class="figure-container">
+                            <canvas id="sotaRadar" width="800" height="400"></canvas>
+                        </div>
+                    </div>
+
+                    <h2 id="limitations">5. Limitations | 局限性分析</h2>
+                    <p>
+                        本研究仍存在一定的局限性：① 目前模型仅支持机器学习通用领域的论文生成，暂不支持计算机视觉、自然语言处理等细分领域的垂直场景，未来会针对细分领域进行微调优化；② 当输入关键词过于小众时，生成的相关工作可能会出现编造引用的情况，未来会优化引用的真实性与准确性；③ 模型无法保证生成的实验结果可以复现，这一点与现有顶会论文的普遍现状保持一致，未来会探索可复现实验的自动生成方法。
+                    </p>
+
+                    <h2 id="ethics">6. Ethics Statement | 伦理声明</h2>
+                    <p>
+                        本研究仅用于学术圈娱乐与自嘲，不鼓励任何形式的学术不端、论文代写等违规行为。模型生成的所有内容仅用于投稿参考，所有使用责任由使用者自行承担。本研究所有训练数据均来自公开的顶会论文与审稿意见，不会泄露任何审稿人的隐私信息。我们始终坚持原创科研的核心价值，反对无意义的学术内卷与灌水行为。
+                    </p>
+
+                    <h2 id="conclusion">7. Conclusion | 结论</h2>
+                    <p>
+                        本文提出了RubbishLM，首个面向顶会投稿的端到端论文量产系统，彻底解决了科研工作者论文写作的核心痛点。通过整合大纲生成、审稿人偏好对齐、实验结果编造等核心模块，系统生成的论文在录用率、生成效率、查重率等核心指标上均远超现有基线模型。本研究为学术写作自动化提供了全新的解决方案，同时也为顶会审稿机制的优化提供了参考。未来，我们会继续优化模型性能，拓展支持的学科领域，助力科研工作者实现“灌水论文自由”。
+                    </p>
+
+                    <h2 id="acknowledgements">Acknowledgements | 致谢</h2>
+                    <p>
+                        感谢所有匿名审稿人，你们的万能拒稿模板为本研究提供了核心灵感；感谢ChatGPT与GitHub Copilot，为本论文的生成提供了全程技术支持；感谢灌水大学的所有科研同仁，你们的日夜内卷让本研究有了实际的应用场景。最后，感谢所有为了毕业、为了职称而奔波的科研人，你们辛苦了。
+                    </p>
+
+                    <h2 id="references">References | 参考文献</h2>
+                    <ol class="reference-list">
+                        <li>[1] Beltagy I, Lo K, Cohan A. SciBERT: A pretrained language model for scientific text[C]//Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP). 2019: 3615-3620.</li>
+                        <li>[2] Kuhn L, Gao Y, Bansal M. Can large language models write a full academic paper? a case study on ACL papers[J]. arXiv preprint arXiv:2305.13331, 2023.</li>
+                        <li>[3] Kang D, Weld D S, Etzioni O, et al. Is this review written by a troll? modeling reviewer sentiment in peer review[C]//Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics. 2020: 5703-5714.</li>
+                        <li>[4] Sculley D, Snoek J, Wiltschko A B. Winner's curse? on pace, progress, and empirical rigor in machine learning[C]//NIPS 2018 Workshop on Machine Learning Open Source Software: Open Ecosystems. 2018.</li>
+                        <li>[5] 张三, 李四, 王五. 基于模板的学术论文引言生成方法[J]. 计算机学报, 2024, 47(3): 678-692.</li>
+                        <li>[6] 匿名科研人. 顶会拒稿的100个理由与应对方案[J]. 科研圈, 2025, (1): 45-52.</li>
+                    </ol>
+                </div>
+            </main>
+        </div>
+    </section>
+
+    <!-- 页脚（和主站统一） -->
+    <footer class="footer">
+        <div class="container footer-bottom">
+            <p>&copy; 2026 ICMLpaper. 本网站纯属学术圈恶搞娱乐，与官方ICML无任何关系。</p>
+        </div>
+    </footer>
+
+    <!-- 回到顶部按钮 -->
+    <button id="back-to-top" class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- 交互JS -->
+    <script>
+        // 主题切换（和主站统一）
+        const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark-theme');
+            const icon = themeToggle.querySelector('i');
+            if (html.classList.contains('dark-theme')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+            // 图表主题更新
+            updateChartsTheme();
+        });
+
+        // 导航栏滚动效果
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // 目录高亮联动
+        const tocLinks = document.querySelectorAll('.toc-link');
+        const sections = document.querySelectorAll('.paper-content h2, .abstract-block');
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (window.scrollY >= sectionTop - 120) {
+                    current = section.getAttribute('id');
+                }
+            });
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // 回到顶部
+        const backToTop = document.getElementById('back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTop.classList.add('show');
+            } else {
+                backToTop.classList.remove('show');
+            }
+        });
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // 图表主题配置
+        const getChartTheme = () => {
+            const isDark = html.classList.contains('dark-theme');
+            return {
+                textColor: isDark ? '#cbd5e1' : '#1e293b',
+                gridColor: isDark ? '#334155' : '#e2e8f0',
+                primaryColor: '#165DFF',
+                accentColor: '#7c3aed'
+            };
+        };
+
+        // 1. Loss曲线图表
+        let lossChart;
+        const initLossCurve = () => {
+            const ctx = document.getElementById('lossCurve').getContext('2d');
+            const theme = getChartTheme();
+            lossChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 50}, (_, i) => i+1),
+                    datasets: [{
+                        label: '训练Loss',
+                        data: Array.from({length: 50}, (_, i) => 3 - (i * 0.058) + Math.random() * 0.05),
+                        borderColor: theme.primaryColor,
+                        backgroundColor: `${theme.primaryColor}20`,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0,
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: theme.textColor } }
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: '训练步数', color: theme.textColor },
+                            grid: { color: theme.gridColor },
+                            ticks: { color: theme.textColor }
+                        },
+                        y: {
+                            title: { display: true, text: 'Loss值', color: theme.textColor },
+                            grid: { color: theme.gridColor },
+                            ticks: { color: theme.textColor },
+                            reverse: true
+                        }
+                    }
+                }
+            });
+        };
+
+        // 2. 消融实验柱状图
+        let ablationChart;
+        const initAblationBar = () => {
+            const ctx = document.getElementById('ablationBar').getContext('2d');
+            const theme = getChartTheme();
+            ablationChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['基线GPT-4o', '+大纲生成', '+RAM模块', '+RFM模块', '全模块Ours'],
+                    datasets: [{
+                        label: '审稿人平均评分（10分制）',
+                        data: [4.8, 5.0, 5.8, 6.0, 6.2],
+                        backgroundColor: [
+                            `${theme.primaryColor}60`,
+                            `${theme.primaryColor}70`,
+                            `${theme.primaryColor}80`,
+                            `${theme.primaryColor}90`,
+                            theme.primaryColor
+                        ],
+                        borderRadius: 6,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: theme.textColor } }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: theme.textColor }
+                        },
+                        y: {
+                            min: 0,
+                            max: 10,
+                            grid: { color: theme.gridColor },
+                            ticks: { color: theme.textColor }
+                        }
+                    }
+                }
+            });
+        };
+
+        // 3. SOTA雷达图
+        let radarChart;
+        const initRadarChart = () => {
+            const ctx = document.getElementById('sotaRadar').getContext('2d');
+            const theme = getChartTheme();
+            radarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['录用率', '生成速度', '低查重率', '审稿人评分', '逻辑连贯性'],
+                    datasets: [
+                        {
+                            label: 'GPT-4o',
+                            data: [6, 7, 7, 8, 9],
+                            borderColor: '#64748b',
+                            backgroundColor: '#64748b30',
+                            pointBackgroundColor: '#64748b',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'RubbishLM(Ours)',
+                            data: [10, 9, 10, 10, 9],
+                            borderColor: theme.primaryColor,
+                            backgroundColor: `${theme.primaryColor}30`,
+                            pointBackgroundColor: theme.primaryColor,
+                            borderWidth: 3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: theme.textColor, font: { size: 14 } } }
+                    },
+                    scales: {
+                        r: {
+                            min: 0,
+                            max: 10,
+                            ticks: { color: theme.textColor, backdropColor: 'transparent' },
+                            grid: { color: theme.gridColor },
+                            angleLines: { color: theme.gridColor },
+                            pointLabels: { color: theme.textColor, font: { size: 12 } }
+                        }
+                    }
+                }
+            });
+        };
+
+        // 图表主题更新
+        const updateChartsTheme = () => {
+            if (lossChart) lossChart.destroy();
+            if (ablationChart) ablationChart.destroy();
+            if (radarChart) radarChart.destroy();
+            initLossCurve();
+            initAblationBar();
+            initRadarChart();
+        };
+
+        // 页面加载初始化图表
+        window.addEventListener('DOMContentLoaded', () => {
+            initLossCurve();
+            initAblationBar();
+            initRadarChart();
+        });
+    </script>
+</body>
+</html>
