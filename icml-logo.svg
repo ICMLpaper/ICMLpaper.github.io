@@ -1,0 +1,30 @@
+<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+  <!-- 适配网页主题的CSS变量 -->
+  <style>
+    :root {
+      --primary: #165DFF;
+      --accent: #7c3aed;
+      --bg-light: #ffffff;
+      --bg-dark: #0f172a;
+      --text-light: #1e293b;
+      --text-dark: #f8fafc;
+    }
+    .dark-theme .icon-fill { fill: #ffffff; }
+    .dark-theme .text-main { fill: #ffffff; }
+    .dark-theme .text-sub { fill: #cbd5e1; }
+    .icon-fill { fill: var(--primary); transition: fill 0.3s ease; }
+    .text-main { fill: var(--primary); font-family: Inter, -apple-system, sans-serif; font-weight: 700; transition: fill 0.3s ease; }
+    .text-sub { fill: var(--accent); font-family: Inter, -apple-system, sans-serif; font-weight: 500; transition: fill 0.3s ease; }
+  </style>
+  
+  <!-- 垃圾桶核心图标（和原网站同源） -->
+  <g class="icon-fill" transform="translate(252, 200) scale(0.52)">
+    <path d="M256 448l32 320h384l32-320H256zM736 128H576l-32-32H416l-32 32H224v64h512v-64zM192 192v384c0 35.3 28.7 64 64 64h448c35.3 0 64-28.7 64-64V192H192z"/>
+  </g>
+  
+  <!-- ICML主文字 -->
+  <text x="512" y="780" text-anchor="middle" class="text-main" font-size="160">ICML</text>
+  
+  <!-- 2026辅助文字 -->
+  <text x="512" y="860" text-anchor="middle" class="text-sub" font-size="60">2026</text>
+</svg>
