@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RubbishLM: 面向顶会投稿的端到端论文量产系统 | ICMLpaper 2025</title>
+<title>RubbishLM: 面向顶会投稿的端到端论文量产系统 | International Conference of MeaningLess Paper</title>
     <!-- 外部资源（和主站完全统一） -->
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.bootcdn.net/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
@@ -326,6 +326,9 @@
                 <button id="theme-toggle" class="icon-btn" title="切换主题">
                     <i class="fas fa-moon"></i>
                 </button>
+                <button id="lang-toggle" class="icon-btn lang-btn" title="Switch to English">
+                    <i class="fas fa-language"></i><span class="lang-label">EN</span>
+                </button>
             </div>
         </div>
     </header>
@@ -382,6 +385,7 @@
                         <span><strong>录用届数：</strong>ICMLpaper 2025 首届</span>
                         <span><strong>归档时间：</strong>2025年6月1日</span>
                         <span><strong>投稿方式：</strong>邮箱 / 小红书直投</span>
+                        <span><strong>所属领域：</strong>AI 主赛道 / 学术写作自动化</span>
                     </div>
                 </div>
 
@@ -394,7 +398,7 @@
                 <div id="abstract" class="abstract-block">
                     <h2>Abstract | 摘要</h2>
                     <p>
-                        针对“想法零散但稿件总是收不拢”的学术写作痛点，本文提出 <b>RubbishLM</b>——一个面向归档展示与投稿初稿生成的端到端系统。不同于仅提供句子补全或格式润色的传统工具，RubbishLM 将大纲规划、相关工作拼接、审稿口吻对齐、实验结果编排与一致性质检整合为统一流程，可同时输出题目、摘要、正文、表格、图注与作者联系信息。基于自建的 <b>RubbishSet</b> 和站内模拟评测集 <b>ArchiveBench-300</b>，RubbishLM 在归档就绪率、细节一致性与审稿模拟评分上均优于通用基线模型，其中归档就绪率达到 88.4%，一致性得分达到 92.5%。该系统并不测量任何真实会议的官方录取结果，而是用于展示一篇“看起来完整、细节更自洽”的讽刺型学术稿件应如何被自动组织与修正。
+                        针对“想法零散但稿件总是收不拢”的学术写作痛点，本文提出 <b>RubbishLM</b>——一个面向归档展示与投稿初稿生成的端到端系统。不同于仅提供句子补全或格式润色的传统工具，RubbishLM 将大纲规划、相关工作拼接、审稿口吻对齐、实验结果编排与一致性质检整合为统一流程，可同时输出题目、摘要、正文、表格、图注与作者联系信息。基于自建的 <b>RubbishSet</b> 和站内模拟评测集 <b>ArchiveBench-300</b>，RubbishLM 在归档就绪率、细节一致性与审稿模拟评分上均优于通用基线模型，其中归档就绪率达到 88.4%，一致性得分达到 92.5%。该系统并不测量任何真实会议的官方录取结果，而是作为本站 AI 主赛道的示例方案，用于展示一篇“看起来完整、细节更自洽”的讽刺型学术稿件应如何被自动组织与修正。
                     </p>
                 </div>
 
@@ -409,7 +413,7 @@
 @inproceedings{rubbishlm2025,
   title={RubbishLM: 面向顶会投稿的端到端论文量产系统},
   author={ChatGPT and GitHub Copilot and 匿名科研狗},
-  booktitle={International Conference of Machine Learning Paper Rubbish},
+  booktitle={International Conference of MeaningLess Paper},
   year={2025}
 }
                     </pre>
@@ -810,7 +814,7 @@
 
                     <h2 id="limitations">5. Limitations | 局限性分析</h2>
                     <p>
-                        本研究仍存在一定的局限性：① 目前模型仅支持机器学习通用领域的论文生成，暂不支持计算机视觉、自然语言处理等细分领域的垂直场景，未来会针对细分领域进行微调优化；② 当输入关键词过于小众时，生成的相关工作可能会出现编造引用的情况，未来会优化引用的真实性与准确性；③ 模型无法保证生成的实验结果可以复现，这一点与现有顶会论文的普遍现状保持一致，未来会探索可复现实验的自动生成方法。
+                        本研究仍存在一定的局限性：① 当前系统仍主要覆盖 AI 主赛道及学术写作自动化相邻主题，对生医、材料、人文社科等跨领域稿件的术语风格迁移支持有限，未来会补充分领域模板；② 当输入关键词过于小众时，生成的相关工作仍可能出现编造引用或跨领域错配的问题，未来会进一步约束引用真实性与学科适配性；③ 模型无法保证生成的实验结果可以复现，这一点与现有“看起来很像成果”的论文现象保持某种戏剧性一致，未来会探索更可复核的自动生成流程。
                     </p>
 
                     <h2 id="ethics">6. Ethics Statement | 伦理声明</h2>
@@ -857,20 +861,64 @@
     
     <!-- 交互JS -->
     <script>
-        const themeToggle = document.getElementById('theme-toggle');
-        const htmlEl = document.documentElement;
 
-        themeToggle.addEventListener('click', () => {
-            htmlEl.classList.toggle('dark-theme');
+        const PAGE_LANG = "zh";
+        const LANG_TARGET = "index-en.html";
+        const THEME_KEY = "icmlpaper-theme";
+        const LANG_KEY = "icmlpaper-lang";
+        const html = document.documentElement;
+        const htmlEl = html;
+        const themeToggle = document.getElementById('theme-toggle');
+        const langToggle = document.getElementById('lang-toggle');
+
+        function updateThemeIcon() {
+            if (!themeToggle) return;
             const icon = themeToggle.querySelector('i');
-            if (htmlEl.classList.contains('dark-theme')) {
+            if (html.classList.contains('dark-theme')) {
                 icon.classList.remove('fa-moon');
                 icon.classList.add('fa-sun');
             } else {
                 icon.classList.remove('fa-sun');
                 icon.classList.add('fa-moon');
             }
-        });
+        }
+
+        function updateLangToggle() {
+            if (!langToggle) return;
+            const label = langToggle.querySelector('.lang-label');
+            if (label) label.textContent = PAGE_LANG === 'zh' ? 'EN' : '中';
+            langToggle.setAttribute('title', PAGE_LANG === 'zh' ? 'Switch to English' : '切换到中文');
+        }
+
+        (function initPreferences() {
+            const savedTheme = localStorage.getItem(THEME_KEY);
+            if (savedTheme === 'dark') {
+                html.classList.add('dark-theme');
+            }
+            updateThemeIcon();
+            updateLangToggle();
+            const savedLang = localStorage.getItem(LANG_KEY);
+            if (savedLang && savedLang !== PAGE_LANG) {
+                location.replace(LANG_TARGET + location.hash);
+            }
+        })();
+
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                html.classList.toggle('dark-theme');
+                localStorage.setItem(THEME_KEY, html.classList.contains('dark-theme') ? 'dark' : 'light');
+                updateThemeIcon();
+            });
+        }
+
+        if (langToggle) {
+            langToggle.addEventListener('click', () => {
+                const nextLang = PAGE_LANG === 'zh' ? 'en' : 'zh';
+                localStorage.setItem(LANG_KEY, nextLang);
+                location.href = LANG_TARGET + location.hash;
+            });
+        }
+
 
         const navbar = document.getElementById('navbar');
         window.addEventListener('scroll', () => {

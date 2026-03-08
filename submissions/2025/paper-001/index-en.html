@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>paper-001: RubbishLM: End-to-end mass production of conference papers | International Conference of MeaningLess Paper</title>
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.bootcdn.net/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+    <link rel="stylesheet" href="../../../style.css">
+    <link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
+    <style>
+        /* 论文页面核心布局 */
+        .paper-wrapper {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        /* 侧边目录导航 */
+        .paper-sidebar {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        .sidebar-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .toc-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .toc-link {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.4;
+            transition: var(--transition);
+            display: block;
+            padding: 0.3rem 0.5rem;
+            border-radius: var(--radius-sm);
+        }
+        .toc-link:hover, .toc-link.active {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        .dark-theme .toc-link:hover, .dark-theme .toc-link.active {
+            background: var(--primary-dark);
+        }
+        /* 论文操作栏 */
+        .paper-actions {
+            margin-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        .action-btn {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--bg-main);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+        .action-btn.primary {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        /* 论文主体容器 */
+        .paper-main {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 3rem 4rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        /* 论文头部 */
+        .paper-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+        }
+        .accept-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: #10b981;
+            color: white;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .paper-header h1 {
+            font-size: 1.8rem;
+            line-height: 1.4;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        .authors {
+            font-size: 1rem;
+            margin-bottom: 0.8rem;
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+        .affiliations {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+        .paper-meta {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        /* 摘要模块 */
+        .abstract-block {
+            margin-bottom: 2rem;
+        }
+        .abstract-block h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+        .abstract-block p {
+            text-align: justify;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            text-indent: 2em;
+            color: var(--text-secondary);
+        }
+        /* 关键词 */
+        .keywords-block {
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+        .keywords-block strong {
+            color: var(--text-primary);
+        }
+        /* 正文排版 */
+        .paper-content h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 2rem 0 0.8rem;
+            color: var(--text-primary);
+            scroll-margin-top: 100px;
+        }
+        .paper-content h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 1.2rem 0 0.6rem;
+            color: var(--text-primary);
+            scroll-margin-top: 100px;
+        }
+        .paper-content p {
+            text-align: justify;
+            line-height: 1.7;
+            margin-bottom: 0.8rem;
+            font-size: 0.98rem;
+            color: var(--text-secondary);
+        }
+        /* 公式样式 */
+        .formula-wrapper {
+            margin: 1rem 0;
+            text-align: center;
+            overflow-x: auto;
+        }
+        .formula-number {
+            float: right;
+            color: var(--text-secondary);
+        }
+        /* 图表容器 */
+        .figure-wrapper {
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+        .figure-container {
+            max-width: 100%;
+            margin: 0 auto;
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: var(--bg-main);
+        }
+        .figure-caption {
+            margin-top: 0.8rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            text-align: center;
+        }
+        .figure-img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+        /* 表格样式 */
+        .paper-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.2rem 0;
+            font-size: 0.9rem;
+        }
+        .paper-table th, .paper-table td {
+            border: 1px solid var(--border);
+            padding: 0.6rem;
+            text-align: center;
+        }
+        .paper-table th {
+            background-color: var(--bg-alt);
+            font-weight: 600;
+        }
+        .table-caption {
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+        /* 引用格式 */
+        .citation-block {
+            background: var(--bg-alt);
+            border-radius: var(--radius);
+            padding: 1.2rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--primary);
+        }
+        .citation-block h3 {
+            margin-top: 0;
+            margin-bottom: 0.8rem;
+        }
+        .citation-code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            overflow-x: auto;
+        }
+        /* 参考文献 */
+        .reference-list {
+            margin-top: 1.5rem;
+        }
+        .reference-list li {
+            margin-bottom: 0.8rem;
+            line-height: 1.6;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            padding-left: 2em;
+            text-indent: -2em;
+        }
+        /* 移动端适配 */
+        @media (max-width: 1024px) {
+            .paper-wrapper {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+            .paper-sidebar {
+                position: static;
+                margin-bottom: 1rem;
+            }
+            .paper-main {
+                padding: 1.5rem 1rem;
+            }
+            .paper-header h1 {
+                font-size: 1.4rem;
+            }
+            .paper-meta {
+                flex-direction: column;
+                gap: 0.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<header class="navbar" id="navbar">
+    <div class="nav-container">
+        <div class="logo"><svg class="logo-img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M256 448l32 320h384l32-320H256zM736 128H576l-32-32H416l-32 32H224v64h512v-64zM192 192v384c0 35.3 28.7 64 64 64h448c35.3 0 64-28.7 64-64V192H192z"/></svg><a href="../../../index-en.html" class="conf-name">ICMLpaper</a></div>
+        <nav class="nav-links"><a href="../../../index-en.html#home" class="nav-link">Home</a><a href="../../../index-en.html#papers" class="nav-link active">Archive</a><a href="../../../index-en.html#submit" class="nav-link">Submit</a></nav>
+        <div class="nav-actions"><button id="theme-toggle" class="icon-btn" title="Toggle theme"><i class="fas fa-moon"></i></button><button id="lang-toggle" class="icon-btn lang-btn" title="切换到中文"><i class="fas fa-language"></i><span class="lang-label">中</span></button></div>
+    </div>
+</header>
+<section class="section"><div class="paper-wrapper"><aside class="paper-sidebar"><div class="sidebar-title"><i class="fas fa-list"></i> Paper outline</div><ul class="toc-list"><li><a href="#abstract" class="toc-link">Abstract</a></li><li><a href="#introduction" class="toc-link">1. Introduction</a></li><li><a href="#related-work" class="toc-link">2. Related Work</a></li><li><a href="#methodology" class="toc-link">3. Method</a></li><li><a href="#experiments" class="toc-link">4. Experiments</a></li><li><a href="#limitations" class="toc-link">5. Limitations</a></li><li><a href="#ethics" class="toc-link">6. Ethics</a></li><li><a href="#conclusion" class="toc-link">7. Conclusion</a></li><li><a href="#references" class="toc-link">References</a></li></ul><div class="paper-actions"><a href="mailto:2072373170@qq.com?subject=ICMLpaper%20Submission" class="action-btn primary"><i class="fas fa-envelope"></i> Submission Email</a><a href="../../../index-en.html#submit" class="action-btn"><i class="fas fa-paper-plane"></i> Submission Guide</a><a href="../index-en.html" class="action-btn"><i class="fas fa-book"></i> Back to Archive</a></div></aside><main class="paper-main"><div class="paper-header"><span class="accept-badge">ICMLpaper 2025 Accepted Paper</span><h1>paper-001: RubbishLM: End-to-end mass production of conference papers</h1><div class="authors">ChatGPT, GitHub Copilot, Anonymous Graduate Student</div><div class="affiliations">OpenAI Paper Factory Lab · Code Mysticism Institute · School of Artificial Intelligence</div><div class="paper-meta"><span><strong>Edition:</strong> ICMLpaper 2025</span><span><strong>Archived:</strong> June 1, 2025</span><span><strong>Submission:</strong> Email / Xiaohongshu</span><span><strong>Track:</strong> AI flagship / automated academic writing</span></div></div><div id="submission-note" class="abstract-block" style="margin-top: 1.2rem;"><h2>Submission Contact</h2><p>Submit to <a href="mailto:2072373170@qq.com">2072373170@qq.com</a> or search for <code>ICMLpaper</code> on Xiaohongshu. Please include PDF, title, authors, abstract, and contact information.</p></div><div id="abstract" class="abstract-block"><h2>Abstract</h2><p>RubbishLM is an end-to-end writing system for archive-ready AI papers. It combines outline planning, related-work stitching, reviewer-aligned phrasing, result framing, and page-level consistency checks. The page is designed as the flagship AI sample in the ICMLpaper 2025 archive.</p></div><div class="keywords-block"><strong>Keywords:</strong> LLM, automated writing, archive readiness, consistency checking, reviewer simulation</div><div class="citation-block"><h3><i class="fas fa-quote-left"></i> Citation</h3><pre class="citation-code">@inproceedings{paper001,
+  title={paper-001: RubbishLM: End-to-end mass production of conference papers},
+  booktitle={International Conference of MeaningLess Paper},
+  year={2025}
+}</pre></div><div class="paper-content"><h2 id="introduction">1. Introduction</h2><p>This sample paper argues that the hardest part of paper automation is not local fluency but page-level consistency. Titles, abstracts, figures, tables, and metadata must point to the same story.</p><h2 id="related-work">2. Related Work</h2><p>Prior work on academic writing, reviewer modeling, and long-form generation informs the design, but the main contribution here is a page-level archive pipeline rather than a single writing tool.</p><h2 id="methodology">3. Methodology</h2><p>The method integrates outline generation, related-work assembly, reviewer alignment, result framing, and consistency checking. The goal is not to predict real conference outcomes, but to produce pages that look complete and internally coherent.</p><div class="figure-wrapper"><div class="figure-container"><img class="figure-img" src="assets/main-metrics.svg" alt="main metrics"></div><p class="figure-caption">Figure 1. Key result overview for the AI flagship / automated academic writing sample paper.</p></div><h2 id="experiments">4. Experiments</h2><p>Experiments are conducted on internal archive benchmarks rather than real conference statistics. The charts below summarize readiness, consistency, and error reduction.</p><div class="figure-wrapper"><div class="figure-container"><img class="figure-img" src="assets/loss-curves.svg" alt="loss curves"></div><p class="figure-caption">Figure 2. Training and validation curves.</p></div><div class="figure-wrapper"><div class="figure-container"><img class="figure-img" src="assets/ablation-trend.svg" alt="ablation trend"></div><p class="figure-caption">Figure 3. Ablation trend across the key modules.</p></div><div class="figure-wrapper"><div class="figure-container"><img class="figure-img" src="assets/error-analysis.svg" alt="error analysis"></div><p class="figure-caption">Figure 4. Page-level error reduction after consistency control.</p></div><h2 id="limitations">5. Limitations</h2><p>The current system is strongest in the AI track and still relies on templates for domain transfer. It cannot guarantee scientific novelty or reproducibility.</p><h2 id="ethics">6. Ethics Statement</h2><p>This page is satirical and should not be used to justify academic misconduct. The system is for page organization and parody only.</p><h2 id="conclusion">7. Conclusion</h2><p>As the flagship AI sample, RubbishLM shows how an archive-focused writing system can improve coherence across sections, figures, and metadata.</p><h2 id="references">References</h2><ol class="reference-list"><li>This English version focuses on interface-level readability, navigation, metadata, abstracts, and section summaries for the bilingual mode.</li><li>The full Chinese pages remain the authoritative long-form archive version in the current release.</li></ol></div></main></div></section><footer class="footer"><div class="container footer-bottom"><p>International Conference of MeaningLess Paper — English interface mode.</p></div></footer><button id="back-to-top" class="back-to-top"><i class="fas fa-arrow-up"></i></button><script>
+
+        const PAGE_LANG = "en";
+        const LANG_TARGET = "index.html";
+        const THEME_KEY = "icmlpaper-theme";
+        const LANG_KEY = "icmlpaper-lang";
+        const html = document.documentElement;
+        const themeToggle = document.getElementById('theme-toggle');
+        const langToggle = document.getElementById('lang-toggle');
+
+        function updateThemeIcon() {
+            if (!themeToggle) return;
+            const icon = themeToggle.querySelector('i');
+            if (html.classList.contains('dark-theme')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        }
+
+        function updateLangToggle() {
+            if (!langToggle) return;
+            const label = langToggle.querySelector('.lang-label');
+            if (label) label.textContent = PAGE_LANG === 'zh' ? 'EN' : '中';
+            langToggle.setAttribute('title', PAGE_LANG === 'zh' ? 'Switch to English' : '切换到中文');
+        }
+
+        (function initPreferences() {
+            const savedTheme = localStorage.getItem(THEME_KEY);
+            if (savedTheme === 'dark') {
+                html.classList.add('dark-theme');
+            }
+            updateThemeIcon();
+            updateLangToggle();
+            const savedLang = localStorage.getItem(LANG_KEY);
+            if (savedLang && savedLang !== PAGE_LANG) {
+                location.replace(LANG_TARGET + location.hash);
+            }
+        })();
+
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                html.classList.toggle('dark-theme');
+                localStorage.setItem(THEME_KEY, html.classList.contains('dark-theme') ? 'dark' : 'light');
+                updateThemeIcon();
+            });
+        }
+
+        if (langToggle) {
+            langToggle.addEventListener('click', () => {
+                const nextLang = PAGE_LANG === 'zh' ? 'en' : 'zh';
+                localStorage.setItem(LANG_KEY, nextLang);
+                location.href = LANG_TARGET + location.hash;
+            });
+        }
+
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => { if (window.scrollY > 50) navbar.classList.add('scrolled'); else navbar.classList.remove('scrolled'); });
+        const tocLinks = document.querySelectorAll('.toc-link');
+        const sections = document.querySelectorAll('.paper-content h2, .abstract-block');
+        window.addEventListener('scroll', () => { let current = ''; sections.forEach(section => { const sectionTop = section.offsetTop; if (window.scrollY >= sectionTop - 120) current = section.getAttribute('id'); }); tocLinks.forEach(link => { link.classList.remove('active'); if (link.getAttribute('href') === `#${current}`) link.classList.add('active'); }); });
+        const backToTop = document.getElementById('back-to-top');
+        window.addEventListener('scroll', () => { if (window.scrollY > 300) backToTop.classList.add('show'); else backToTop.classList.remove('show'); });
+        backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script></body></html>
