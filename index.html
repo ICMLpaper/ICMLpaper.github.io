@@ -3,201 +3,680 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ICML: International Conference of Machine Learning Rubbish</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- 引入Font Awesome图标库 -->
+    <title>ICML 2026 | International Conference of Machine Learning Rubbish</title>
+    <meta name="description" content="全球最水的人工智能顶会，致力于让每一篇灌水论文都有处可去">
+    <!-- 引入外部资源 -->
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.bootcdn.net/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <!-- 网站图标 -->
+    <link rel="icon" href="https://iclrpaper.github.io/iclrpaper/assets/trash.png" type="image/png">
 </head>
 <body>
     <!-- 顶部导航栏 -->
-    <header class="navbar">
+    <header class="navbar" id="navbar">
         <div class="nav-container">
             <div class="logo">
-                <img src="https://iclrpaper.github.io/iclrpaper/assets/trash.png" alt="Trash Logo" class="logo-img">
-                <span class="conf-name">ICML: International Conference of Machine Learning Rubbish</span>
+                <img src="https://iclrpaper.github.io/iclrpaper/assets/trash.png" alt="ICML Logo" class="logo-img">
+                <span class="conf-name">ICML 2026</span>
             </div>
+            <!-- 桌面端导航 -->
             <nav class="nav-links">
                 <a href="#home" class="nav-link active">首页</a>
+                <a href="#about" class="nav-link">关于会议</a>
                 <a href="#dates" class="nav-link">重要日期</a>
-                <a href="#topics" class="nav-link">主题领域</a>
-                <a href="#papers" class="nav-link">已发表论文</a>
-                <a href="#rejects" class="nav-link">退稿案例</a>
+                <a href="#speakers" class="nav-link">特邀讲者</a>
+                <a href="#topics" class="nav-link">征稿主题</a>
+                <a href="#papers" class="nav-link">录用论文</a>
+                <a href="#faq" class="nav-link">FAQ</a>
             </nav>
+            <!-- 操作按钮 -->
+            <div class="nav-actions">
+                <button id="theme-toggle" class="icon-btn" title="切换主题">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button id="menu-toggle" class="icon-btn menu-btn" title="菜单">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+        <!-- 移动端菜单 -->
+        <div class="mobile-menu" id="mobile-menu">
+            <a href="#home" class="mobile-link">首页</a>
+            <a href="#about" class="mobile-link">关于会议</a>
+            <a href="#dates" class="mobile-link">重要日期</a>
+            <a href="#speakers" class="mobile-link">特邀讲者</a>
+            <a href="#topics" class="mobile-link">征稿主题</a>
+            <a href="#papers" class="mobile-link">录用论文</a>
+            <a href="#faq" class="mobile-link">FAQ</a>
         </div>
     </header>
 
-    <!-- 主内容区 -->
-    <main>
-        <!-- Hero 区域 -->
-        <section id="home" class="hero">
-            <div class="hero-content">
-                <h1>人工智能底会ICML: Call4Papers</h1>
-                <p>致力于打造最公平公正的人工智能学术社区。感谢您对ICML社区的支持和对人工智能研究的贡献！</p>
-                <div class="hero-buttons">
-                    <button class="btn btn-primary">
-                        <i class="fas fa-paper-plane"></i> 立即投稿
+    <!-- Hero主视觉区 -->
+    <section id="home" class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">ICML 2026</h1>
+            <p class="hero-subtitle">International Conference of Machine Learning Rubbish</p>
+            <p class="hero-slogan typewriter">致力于打造全球最公平的灌水论文发表平台，审稿全看缘分，录用全靠运气</p>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-num" data-target="0.01">0</span>%
+                    <p class="stat-label">录用率</p>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-num" data-target="100000">0</span>+
+                    <p class="stat-label">投稿量</p>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-num" data-target="99">0</span>%
+                    <p class="stat-label">退稿率</p>
+                </div>
+            </div>
+            <div class="hero-buttons">
+                <a href="#submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> 立即投稿
+                </a>
+                <a href="#papers" class="btn btn-secondary">
+                    <i class="fas fa-book"></i> 查看录用论文
+                </a>
+            </div>
+        </div>
+        <div class="scroll-down">
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+
+    <!-- 关于会议 -->
+    <section id="about" class="section">
+        <div class="container">
+            <h2 class="section-title fade-in">
+                <i class="fas fa-info-circle"></i> 关于 ICML 2026
+            </h2>
+            <div class="about-content fade-in">
+                <div class="about-text">
+                    <p>ICML（International Conference of Machine Learning Rubbish）是人工智能领域最具影响力的“底会”，自2023年举办以来，始终致力于为全球科研工作者提供一个“灌水自由”的学术平台。</p>
+                    <p>我们打破传统顶会的审稿偏见，首创「随机录用」机制，彻底解决“创新性不足”、“实验不充分”、“相关工作缺失”等经典拒稿理由，让每一篇论文都拥有平等的录用机会。</p>
+                    <p>2026年，我们将继续秉承“能跑就行、能灌就收”的宗旨，为全球AI学术圈带来最纯粹的灌水体验。</p>
+                    <div class="formula">
+                        <p>灌水论文录用核心公式：</p>
+                        \[ P(\text{录用}) = \frac{\text{页数} \times \text{参考文献数量}}{\text{审稿人当天心情指数} \times 1000} \]
+                    </div>
+                </div>
+                <div class="about-card">
+                    <div class="card-header">
+                        <h3>会议信息</h3>
+                    </div>
+                    <ul class="info-list">
+                        <li>
+                            <i class="fas fa-calendar"></i>
+                            <span>会议时间：2026年6月1日</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>会议地点：线上腾讯会议</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-user-tie"></i>
+                            <span>大会主席：匿名审稿人</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-book"></i>
+                            <span>收录数据库：arXiv预印本</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 重要日期 -->
+    <section id="dates" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title fade-in">
+                <i class="fas fa-calendar-alt"></i> 重要日期
+            </h2>
+            <div class="timeline">
+                <div class="timeline-item fade-in">
+                    <div class="timeline-date">2026年4月1日</div>
+                    <div class="timeline-content">
+                        <h3>投稿截止</h3>
+                        <p>所有稿件必须在愚人节当天23:59前提交，逾期系统自动销毁，不接受任何延期申请。</p>
+                    </div>
+                </div>
+                <div class="timeline-item fade-in">
+                    <div class="timeline-date">2026年4月15日</div>
+                    <div class="timeline-content">
+                        <h3>审稿意见返回</h3>
+                        <p>每篇论文将收到至少3条匿名审稿意见，统一包含“我看不懂但大受震撼”、“创新性不足”等经典话术。</p>
+                    </div>
+                </div>
+                <div class="timeline-item fade-in">
+                    <div class="timeline-date">2026年4月30日</div>
+                    <div class="timeline-content">
+                        <h3>Rebuttal截止</h3>
+                        <p>作者可提交反驳意见，我们承诺不会阅读任何Rebuttal内容，维持原审稿结果不变。</p>
+                    </div>
+                </div>
+                <div class="timeline-item fade-in">
+                    <div class="timeline-date">2026年5月1日</div>
+                    <div class="timeline-content">
+                        <h3>录用通知</h3>
+                        <p>系统随机抽取1%的论文录用，其余稿件统一回复“感谢您的投稿，祝您下次好运”。</p>
+                    </div>
+                </div>
+                <div class="timeline-item fade-in">
+                    <div class="timeline-date">2026年6月1日</div>
+                    <div class="timeline-content">
+                        <h3>会议召开</h3>
+                        <p>线上会议全程播放《学术咸鱼自救指南》，录用作者可自愿进行1分钟闪电报告。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 特邀讲者 -->
+    <section id="speakers" class="section">
+        <div class="container">
+            <h2 class="section-title fade-in">
+                <i class="fas fa-microphone"></i> 特邀讲者
+            </h2>
+            <div class="speakers-grid">
+                <div class="speaker-card fade-in">
+                    <div class="speaker-avatar">
+                        <i class="fas fa-robot fa-4x"></i>
+                    </div>
+                    <h3>ChatGPT</h3>
+                    <p class="speaker-title">首席灌水顾问</p>
+                    <p class="speaker-desc">全球顶会论文量产专家，擅长10分钟生成一篇结构完整、逻辑通顺的灌水论文，累计帮助10w+科研人完成毕业任务。</p>
+                </div>
+                <div class="speaker-card fade-in">
+                    <div class="speaker-avatar">
+                        <i class="fas fa-user-secret fa-4x"></i>
+                    </div>
+                    <h3>匿名审稿人</h3>
+                    <p class="speaker-title">大会荣誉主席</p>
+                    <p class="speaker-desc">顶会拒稿第一人，擅长从任何角度找到论文的拒稿理由，手握“创新性不足”万能模板，拒稿率常年保持100%。</p>
+                </div>
+                <div class="speaker-card fade-in">
+                    <div class="speaker-avatar">
+                        <i class="fas fa-code fa-4x"></i>
+                    </div>
+                    <h3>GitHub Copilot</h3>
+                    <p class="speaker-title">代码实现专家</p>
+                    <p class="speaker-desc">AI代码补全天花板，擅长把伪代码变成能跑的实验，哪怕结果不对，也能生成看起来很专业的loss曲线。</p>
+                </div>
+                <div class="speaker-card fade-in">
+                    <div class="speaker-avatar">
+                        <i class="fas fa-chart-line fa-4x"></i>
+                    </div>
+                    <h3>调参侠</h3>
+                    <p class="speaker-title">玄学调参讲师</p>
+                    <p class="speaker-desc">深耕深度学习调参领域10年，精通学习率、batch size与审稿人偏好的神秘联系，擅长把baseline刷到SOTA。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 征稿主题 -->
+    <section id="topics" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title fade-in">
+                <i class="fas fa-flask"></i> 征稿主题
+            </h2>
+            <div class="topics-grid">
+                <div class="topic-card fade-in">
+                    <i class="fas fa-brain fa-3x"></i>
+                    <h3>垃圾神经网络</h3>
+                    <p>研究如何用最少的算力实现最水的效果，主打一个“能跑就行”，哪怕准确率比随机猜还低。</p>
+                </div>
+                <div class="topic-card fade-in">
+                    <i class="fas fa-chart-line fa-3x"></i>
+                    <h3>玄学调参学</h3>
+                    <p>探索学习率、batch size、随机种子与审稿人心情之间的非线性关系，构建调参玄学理论体系。</p>
+                </div>
+                <div class="topic-card fade-in">
+                    <i class="fas fa-robot fa-3x"></i>
+                    <h3>AI伦理玄学</h3>
+                    <p>讨论“为什么我的模型总是在关键时刻掉链子”、“复现不了的结果算不算结果”等核心哲学问题。</p>
+                </div>
+                <div class="topic-card fade-in">
+                    <i class="fas fa-book-dead fa-3x"></i>
+                    <h3>文献灌水术</h3>
+                    <p>从0到100篇论文的量产技巧，拒绝原创，拥抱缝合，实现参考文献自由与引言自由。</p>
+                </div>
+                <div class="topic-card fade-in">
+                    <i class="fas fa-image fa-3x"></i>
+                    <h3>可视化P图学</h3>
+                    <p>研究如何把模糊的实验结果图修得看起来很专业，如何让loss曲线看起来更平滑、更有说服力。</p>
+                </div>
+                <div class="topic-card fade-in">
+                    <i class="fas fa-bug fa-3x"></i>
+                    <h3>实验复现玄学</h3>
+                    <p>探索“我的代码在我电脑上能跑”、“换个种子结果就不对”等行业难题，构建复现免责声明模板库。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 录用论文精选 -->
+    <section id="papers" class="section">
+        <div class="container">
+            <h2 class="section-title fade-in">
+                <i class="fas fa-book-open"></i> 录用论文精选
+            </h2>
+            <div class="tabs fade-in">
+                <button class="tab-btn active" data-tab="2026">2026年</button>
+                <button class="tab-btn" data-tab="2025">2025年</button>
+                <button class="tab-btn" data-tab="2024">2024年</button>
+                <button class="tab-btn" data-tab="2023">2023年</button>
+            </div>
+            <div class="tab-content active" id="2026">
+                <div class="papers-list">
+                    <div class="paper-item">
+                        <div class="paper-title">
+                            <i class="fas fa-file-alt"></i>
+                            《基于ChatGPT的顶会论文量产系统》
+                        </div>
+                        <div class="paper-authors">ChatGPT, GitHub Copilot, 匿名科研狗</div>
+                        <div class="paper-abstract">
+                            摘要：本文提出了一种基于大语言模型的顶会论文全自动量产系统，仅需输入一个关键词，即可生成结构完整、逻辑通顺、实验丰富的论文，经测试，该系统生成的论文在ICML、NeurIPS等顶会的录用率高达0.02%，远超人工投稿水平。
+                        </div>
+                    </div>
+                    <div class="paper-item">
+                        <div class="paper-title">
+                            <i class="fas fa-file-alt"></i>
+                            《随机种子对深度学习模型录用率的影响研究》
+                        </div>
+                        <div class="paper-authors">调参侠, 炼丹师, 毕业困难户</div>
+                        <div class="paper-abstract">
+                            摘要：本文通过10000组对照实验，系统研究了随机种子对模型性能、论文录用率的影响，实验结果表明，当随机种子为42时，论文的录用率比其他种子高出37%，该发现为深度学习领域的实验设计提供了全新的指导思路。
+                        </div>
+                    </div>
+                    <div class="paper-item">
+                        <div class="paper-title">
+                            <i class="fas fa-file-alt"></i>
+                            《基于万能模板的顶会拒稿Rebuttal生成方法》
+                        </div>
+                        <div class="paper-authors">被拒稿100次的博士, 导师</div>
+                        <div class="paper-abstract">
+                            摘要：针对顶会审稿人提出的各类无理拒稿理由，本文提出了一种万能Rebuttal生成模板，能够在不补充任何实验的情况下，有理有据地反驳所有审稿意见，经测试，该模板的反驳成功率为0%，但能有效缓解作者的焦虑情绪。
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-content" id="2025">
+                <div class="papers-list">
+                    <div class="paper-item">
+                        <div class="paper-title">
+                            <i class="fas fa-file-alt"></i>
+                            《关于“创新性不足”的系统性定义与规避方法》
+                        </div>
+                        <div class="paper-authors">匿名科研人</div>
+                    </div>
+                    <div class="paper-item">
+                        <div class="paper-title">
+                            <i class="fas fa-file-alt"></i>
+                            《如何用10行代码实现一个SOTA模型》
+                        </div>
+                        <div class="paper-authors">GitHub Copilot</div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-content" id="2024">
+                <div class="papers-list">
+                    <div class="paper-item">
+                        <div class="paper-title">
+                            <i class="fas fa-file-alt"></i>
+                            《AI审稿人vs人类审稿人：拒稿能力对比研究》
+                        </div>
+                        <div class="paper-authors">被AI拒稿的博士</div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-content" id="2023">
+                <div class="papers-list">
+                    <div class="paper-item">
+                        <div class="paper-title">
+                            <i class="fas fa-file-alt"></i>
+                            《ICML：灌水论文的新家园》
+                        </div>
+                        <div class="paper-authors">大会组委会</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 投稿流程 -->
+    <section id="submit" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title fade-in">
+                <i class="fas fa-paper-plane"></i> 投稿流程
+            </h2>
+            <div class="steps">
+                <div class="step-item fade-in">
+                    <div class="step-num">1</div>
+                    <h3>生成论文</h3>
+                    <p>使用ChatGPT、Claude等工具生成一篇结构完整的论文，无需原创，无需实验，只要能编译成PDF即可。</p>
+                </div>
+                <div class="step-item fade-in">
+                    <div class="step-num">2</div>
+                    <h3>提交投稿</h3>
+                    <p>在截止日期前上传PDF至投稿系统，无需填写作者信息、伦理声明，系统自动接收所有投稿。</p>
+                </div>
+                <div class="step-item fade-in">
+                    <div class="step-num">3</div>
+                    <h3>等待审稿</h3>
+                    <p>系统自动分配3名AI审稿人，在10秒内生成审稿意见，无需担心审稿人看不懂你的创新点。</p>
+                </div>
+                <div class="step-item fade-in">
+                    <div class="step-num">4</div>
+                    <h3>接收结果</h3>
+                    <p>系统随机抽取录用论文，无论审稿意见好坏，都有平等的录用机会，未录用论文自动进入下一届会议。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 审稿人毒舌墙 -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title fade-in">
+                <i class="fas fa-comment-dots"></i> 审稿人毒舌墙
+            </h2>
+            <div class="review-marquee">
+                <div class="review-track">
+                    <span class="review-item">“这篇论文的创新性还不如我的本科毕设。”</span>
+                    <span class="review-item">“我看不懂这个方法，所以我建议拒稿。”</span>
+                    <span class="review-item">“实验不充分，建议补充100组对照实验。”</span>
+                    <span class="review-item">“相关工作缺失，没有引用我2020年的论文。”</span>
+                    <span class="review-item">“这个问题太简单了，没有研究价值。”</span>
+                    <span class="review-item">“这个问题太难了，不适合本会议。”</span>
+                    <span class="review-item">“代码没有开源，我无法复现结果，拒稿。”</span>
+                    <span class="review-item">“代码开源了，但我懒得跑，还是拒稿。”</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title fade-in">
+                <i class="fas fa-question-circle"></i> 常见问题 FAQ
+            </h2>
+            <div class="faq-container">
+                <div class="faq-item fade-in">
+                    <button class="faq-question">
+                        <span>ICML会议的录用标准是什么？</span>
+                        <i class="fas fa-chevron-down"></i>
                     </button>
-                    <button class="btn btn-secondary">
-                        <i class="fas fa-search"></i> 接收论文
+                    <div class="faq-answer">
+                        <p>我们采用全球最公平的「随机录用」机制，所有投稿论文无论质量高低，都拥有完全平等的1%录用概率，彻底杜绝审稿人的个人偏见和学术歧视。</p>
+                    </div>
+                </div>
+                <div class="faq-item fade-in">
+                    <button class="faq-question">
+                        <span>论文需要开源代码吗？</span>
+                        <i class="fas fa-chevron-down"></i>
                     </button>
-                    <button class="btn btn-secondary">
-                        <i class="fas fa-phone"></i> 联系我们
+                    <div class="faq-answer">
+                        <p>完全不需要。我们理解科研工作者的难处，无论你的代码能不能跑、有没有bug，都不影响投稿和录用，只要论文里有“代码将在录用后开源”这句话即可。</p>
+                    </div>
+                </div>
+                <div class="faq-item fade-in">
+                    <button class="faq-question">
+                        <span>论文有页数限制吗？</span>
+                        <i class="fas fa-chevron-down"></i>
                     </button>
+                    <div class="faq-answer">
+                        <p>没有上限，页数越多、参考文献越多，录用概率越高。我们建议至少10页正文+50篇参考文献，其中至少30篇引用ICML往届录用论文，可显著提升录用运气。</p>
+                    </div>
+                </div>
+                <div class="faq-item fade-in">
+                    <button class="faq-question">
+                        <span>被拒稿了可以申诉吗？</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>不可以。我们的拒稿结果是最终决定，申诉只会收到“感谢您的反馈，祝您下次好运”的统一回复。但所有被拒稿的论文，都可以自动获得下一届会议的投稿资格。</p>
+                    </div>
+                </div>
+                <div class="faq-item fade-in">
+                    <button class="faq-question">
+                        <span>录用的论文会被哪些数据库收录？</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>所有录用论文都会被收录到arXiv预印本平台，作者可自行上传，我们不提供任何收录证明，也不保证任何学校或单位认可该会议的学术价值。</p>
+                    </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- 重要日期 -->
-        <section id="dates" class="section">
-            <div class="container">
-                <h2 class="section-title">
-                    <i class="fas fa-calendar-alt"></i> 重要日期
-                </h2>
-                <div class="timeline">
-                    <div class="timeline-item">
-                        <div class="timeline-date">2026年4月1日</div>
-                        <div class="timeline-content">
-                            <h3>投稿截止</h3>
-                            <p>所有稿件必须在愚人节当天提交，逾期系统自动销毁。</p>
-                        </div>
+    <!-- 赞助商 -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title fade-in">
+                <i class="fas fa-hand-holding-usd"></i> 赞助商
+            </h2>
+            <div class="sponsors">
+                <div class="sponsor-tier fade-in">
+                    <h3>钻石赞助商 💎</h3>
+                    <div class="sponsor-logos">
+                        <div class="sponsor-logo">ChatGPT</div>
+                        <div class="sponsor-logo">GitHub Copilot</div>
                     </div>
-                    <div class="timeline-item">
-                        <div class="timeline-date">2026年4月15日</div>
-                        <div class="timeline-content">
-                            <h3>审稿意见返回</h3>
-                            <p>将收到至少3条“我看不懂但大受震撼”的评审意见。</p>
-                        </div>
+                </div>
+                <div class="sponsor-tier fade-in">
+                    <h3>黄金赞助商 🏅</h3>
+                    <div class="sponsor-logos">
+                        <div class="sponsor-logo">Overleaf</div>
+                        <div class="sponsor-logo">arXiv</div>
+                        <div class="sponsor-logo">ResearchGate</div>
                     </div>
-                    <div class="timeline-item">
-                        <div class="timeline-date">2026年5月1日</div>
-                        <div class="timeline-content">
-                            <h3>录用通知</h3>
-                            <p>随机抽取1%的论文录用，其余统一回复“创新性不足”。</p>
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-date">2026年6月1日</div>
-                        <div class="timeline-content">
-                            <h3>会议召开</h3>
-                            <p>线上会议，全程播放《学术咸鱼自救指南》。</p>
-                        </div>
+                </div>
+                <div class="sponsor-tier fade-in">
+                    <h3>白银赞助商 🥈</h3>
+                    <div class="sponsor-logos">
+                        <div class="sponsor-logo">Python</div>
+                        <div class="sponsor-logo">PyTorch</div>
+                        <div class="sponsor-logo">TensorFlow</div>
+                        <div class="sponsor-logo">LaTeX</div>
                     </div>
                 </div>
             </div>
-        </section>
-
-        <!-- 主题领域 -->
-        <section id="topics" class="section section-alt">
-            <div class="container">
-                <h2 class="section-title">
-                    <i class="fas fa-flask"></i> 主题领域
-                </h2>
-                <div class="topics-grid">
-                    <div class="topic-card">
-                        <i class="fas fa-brain fa-3x"></i>
-                        <h3>垃圾神经网络</h3>
-                        <p>研究如何用最少的算力实现最水的效果，主打一个“能跑就行”。</p>
-                    </div>
-                    <div class="topic-card">
-                        <i class="fas fa-chart-line fa-3x"></i>
-                        <h3>玄学调参学</h3>
-                        <p>探索学习率、batch size与审稿人心情之间的神秘联系。</p>
-                    </div>
-                    <div class="topic-card">
-                        <i class="fas fa-robot fa-3x"></i>
-                        <h3>AI伦理玄学</h3>
-                        <p>讨论“为什么我的模型总是在关键时刻掉链子”的哲学问题。</p>
-                    </div>
-                    <div class="topic-card">
-                        <i class="fas fa-book-dead fa-3x"></i>
-                        <h3>文献灌水术</h3>
-                        <p>从0到100篇论文的量产技巧，拒绝原创，拥抱缝合。</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 往届回顾 -->
-        <section class="section">
-            <div class="container">
-                <h2 class="section-title">
-                    <i class="fas fa-history"></i> 往届回顾
-                </h2>
-                <div class="past-confs">
-                    <div class="conf-card">
-                        <span class="conf-year">2025</span>
-                        <h3>ICML 2025</h3>
-                        <p>录用率：0.01%，创下历史新低，成功劝退99.99%的科研狗。</p>
-                    </div>
-                    <div class="conf-card">
-                        <span class="conf-year">2024</span>
-                        <h3>ICML 2024</h3>
-                        <p>首次引入“AI审稿人”，结果所有论文都因“格式不美观”被拒。</p>
-                    </div>
-                    <div class="conf-card">
-                        <span class="conf-year">2023</span>
-                        <h3>ICML 2023</h3>
-                        <p>主题：“复现不了的工作才是好工作”，引发学术界广泛共鸣。</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 赞助商 -->
-        <section class="section section-alt">
-            <div class="container">
-                <h2 class="section-title">
-                    <i class="fas fa-hand-holding-usd"></i> 赞助商
-                </h2>
-                <div class="sponsors">
-                    <div class="sponsor-tier">
-                        <h3>钻石赞助商 💎</h3>
-                        <div class="sponsor-logos">
-                            <div class="sponsor-logo">GitHub Copilot</div>
-                            <div class="sponsor-logo">ChatGPT</div>
-                        </div>
-                    </div>
-                    <div class="sponsor-tier">
-                        <h3>黄金赞助商 🏅</h3>
-                        <div class="sponsor-logos">
-                            <div class="sponsor-logo">Overleaf</div>
-                            <div class="sponsor-logo"> arXiv</div>
-                            <div class="sponsor-logo">ResearchGate</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
+        </div>
+    </section>
 
     <!-- 页脚 -->
     <footer class="footer">
         <div class="container footer-content">
             <div class="footer-col">
                 <h4>关于ICML</h4>
-                <p>全球最“水”的人工智能学术会议，致力于让每一篇灌水论文都有处可去。</p>
+                <p>International Conference of Machine Learning Rubbish，全球最水的人工智能学术会议，致力于让每一篇灌水论文都有处可去。</p>
             </div>
             <div class="footer-col">
                 <h4>快速链接</h4>
                 <ul>
-                    <li><a href="#">投稿指南</a></li>
-                    <li><a href="#">审稿政策</a></li>
-                    <li><a href="#">代码开源</a></li>
-                    <li><a href="#">联系我们</a></li>
+                    <li><a href="#submit">投稿指南</a></li>
+                    <li><a href="#dates">重要日期</a></li>
+                    <li><a href="#papers">录用论文</a></li>
+                    <li><a href="#faq">常见问题</a></li>
                 </ul>
             </div>
             <div class="footer-col">
-                <h4>关注我们</h4>
+                <h4>联系我们</h4>
+                <ul>
+                    <li>投稿邮箱：icml-rubbish@example.com</li>
+                    <li>官方GitHub：github.com/icmlpaper</li>
+                </ul>
                 <div class="social-links">
-                    <a href="#"><i class="fab fa-twitter"></i></a>
                     <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
                     <a href="#"><i class="fab fa-linkedin"></i></a>
                 </div>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 ICML: International Conference of Machine Learning Rubbish. All rights reserved.</p>
+            <p>&copy; 2026 ICML: International Conference of Machine Learning Rubbish. 本网站纯属恶搞，与官方ICML无任何关系。</p>
         </div>
     </footer>
+
+    <!-- 回到顶部按钮 -->
+    <button id="back-to-top" class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- 极简JS实现交互 -->
+    <script>
+        // 导航栏滚动效果
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // 移动端菜单切换
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('active');
+            menuToggle.querySelector('i').classList.toggle('fa-bars');
+            menuToggle.querySelector('i').classList.toggle('fa-times');
+        });
+
+        // 移动端菜单点击关闭
+        document.querySelectorAll('.mobile-link').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('active');
+                menuToggle.querySelector('i').classList.add('fa-bars');
+                menuToggle.querySelector('i').classList.remove('fa-times');
+            });
+        });
+
+        // 主题切换
+        const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark-theme');
+            const icon = themeToggle.querySelector('i');
+            if (html.classList.contains('dark-theme')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        });
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+                // 导航激活状态更新
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.classList.remove('active');
+                });
+                document.querySelector(`.nav-link[href="${targetId}"]`)?.classList.add('active');
+            });
+        });
+
+        // 数字滚动动画
+        const statNums = document.querySelectorAll('.stat-num');
+        const animateNumbers = () => {
+            statNums.forEach(stat => {
+                const target = parseFloat(stat.getAttribute('data-target'));
+                const duration = 2000;
+                const step = target / (duration / 16);
+                let current = 0;
+                const timer = setInterval(() => {
+                    current += step;
+                    if (current >= target) {
+                        stat.textContent = target;
+                        clearInterval(timer);
+                    } else {
+                        stat.textContent = current.toFixed(target < 1 ? 2 : 0);
+                    }
+                }, 16);
+            });
+        };
+
+        // 元素渐入动画
+        const fadeElements = document.querySelectorAll('.fade-in');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    // 触发数字动画
+                    if (entry.target.classList.contains('hero-stats')) {
+                        animateNumbers();
+                    }
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        fadeElements.forEach(el => observer.observe(el));
+
+        // 标签页切换
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetTab = btn.getAttribute('data-tab');
+                // 切换按钮状态
+                tabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                // 切换内容
+                tabContents.forEach(content => content.classList.remove('active'));
+                document.getElementById(targetTab).classList.add('active');
+            });
+        });
+
+        // FAQ折叠面板
+        const faqQuestions = document.querySelectorAll('.faq-question');
+        faqQuestions.forEach(question => {
+            question.addEventListener('click', () => {
+                const faqItem = question.parentElement;
+                const answer = question.nextElementSibling;
+                const icon = question.querySelector('i');
+                // 切换当前面板
+                faqItem.classList.toggle('active');
+                answer.style.maxHeight = faqItem.classList.contains('active') ? answer.scrollHeight + 'px' : 0;
+                icon.style.transform = faqItem.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0)';
+            });
+        });
+
+        // 回到顶部按钮
+        const backToTop = document.getElementById('back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTop.classList.add('show');
+            } else {
+                backToTop.classList.remove('show');
+            }
+        });
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
 </body>
 </html>
