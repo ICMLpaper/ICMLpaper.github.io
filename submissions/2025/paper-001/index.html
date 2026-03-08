@@ -7,7 +7,6 @@
     <!-- 外部资源（和主站完全统一） -->
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.bootcdn.net/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/Chart.js/4.4.8/chart.umd.min.js"></script>
     <!-- 主站样式复用 -->
     <link rel="stylesheet" href="../../../style.css">
     <!-- 网站图标 -->
@@ -227,6 +226,11 @@
             color: var(--text-primary);
             text-align: center;
         }
+        .figure-img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
         /* 表格样式 */
         .paper-table {
             width: 100%;
@@ -390,14 +394,13 @@
                 <div id="abstract" class="abstract-block">
                     <h2>Abstract | 摘要</h2>
                     <p>
-                        随着人工智能顶会投稿量连年激增，科研工作者面临着“内卷严重、写作耗时远超科研本身”的行业痛点。现有学术写作工具仅能实现单句补全、格式排版等辅助功能，无法完成从关键词到可投稿 PDF 的端到端全流程自动化。针对这一问题，本文提出了<b>RubbishLM</b>——全球首个面向顶会投稿的论文量产系统，整合了大纲智能生成、相关工作缝合、方法论伪创新构建、实验结果合理编造、审稿人偏好对齐五大核心模块。基于百万级顶会论文数据集 RubbishSet 微调后，系统生成的论文在各大顶会投稿场景中展现出更高的成稿效率、更稳定的结构完整性与更低的内容重复率。本研究为科研工作者实现“灌水论文自由”提供了完整的解决方案，论文模板、归档版本与联系信息均可在本站页面中直接获取。
+                        针对“想法零散但稿件总是收不拢”的学术写作痛点，本文提出 <b>RubbishLM</b>——一个面向归档展示与投稿初稿生成的端到端系统。不同于仅提供句子补全或格式润色的传统工具，RubbishLM 将大纲规划、相关工作拼接、审稿口吻对齐、实验结果编排与一致性质检整合为统一流程，可同时输出题目、摘要、正文、表格、图注与作者联系信息。基于自建的 <b>RubbishSet</b> 和站内模拟评测集 <b>ArchiveBench-300</b>，RubbishLM 在归档就绪率、细节一致性与审稿模拟评分上均优于通用基线模型，其中归档就绪率达到 88.4%，一致性得分达到 92.5%。该系统并不测量任何真实会议的官方录取结果，而是用于展示一篇“看起来完整、细节更自洽”的讽刺型学术稿件应如何被自动组织与修正。
                     </p>
                 </div>
 
                 <!-- 关键词 -->
                 <div class="keywords-block">
-                    <strong>关键词：</strong>大语言模型、学术论文量产、灌水学术、审稿人偏好对齐、玄学调参、顶会投稿
-                </div>
+                    <strong>关键词：</strong>大语言模型、学术写作自动化、归档就绪率、一致性质检、审稿模拟、讽刺学术</div>
 
                 <!-- 引用格式 -->
                 <div class="citation-block">
@@ -414,266 +417,396 @@
 
                 <!-- 正文内容 -->
                 <div class="paper-content">
+                    
                     <h2 id="introduction">1. Introduction | 引言</h2>
                     <p>
-                        近年来，机器学习顶会的投稿量呈现指数级增长趋势：2025年ICML总投稿量突破22万篇，最终录用率仅为0.98%，首次跌破1%大关。在如此激烈的内卷环境下，科研工作者平均需要花费6-8个月完成一篇论文的写作与修改，其中70%的时间消耗在格式调整、参考文献凑数、迎合审稿人偏好等非科研核心工作上，严重挤压了原创研究的时间与精力。
+                        近年来，学术写作工具已经从拼写纠错、句子续写，进一步扩展到摘要生成、相关工作整理乃至整篇初稿搭建。但在实际写作过程中，最容易让一篇稿件“看起来不专业”的，并不是模型不会写句子，而是题目、摘要、章节结构、图表、表格、作者信息与投稿说明之间出现了大量细节性不一致：前文写的是一种设定，后文换成了另一种口径；摘要声称解决的是一个问题，实验部分却评测了另一个任务；表格、图注和正文互相对不上，导致读者一眼就能识别出这是“拼出来”的稿件。
                     </p>
                     <p>
-                        与此同时，现有学术写作工具存在明显的局限性：SciBERT等学术预训练模型仅能实现单句文本生成，无法保证整篇论文的逻辑连贯性；GPT-4o等通用大语言模型虽能生成完整段落，但未针对顶会审稿人的偏好进行优化，生成内容极易被挑出“创新性不足”、“实验不充分”等漏洞；Overleaf等工具仅能解决格式排版问题，无法对论文内容本身提供实质性帮助。
+                        现有工具通常只能解决其中的一小部分问题。SciBERT 等学术模型偏重局部文本生成，擅长句子级补全，但难以维持整篇文章的叙事链条；通用大语言模型可以快速生成整段文字，却常在表格数字、模块命名、引用口径与结论归纳等位置暴露出“细节 bug”；纯排版工具虽然能输出规整 PDF，却无法保证内容本身前后一致。对讽刺型学术网站而言，这类细节错误尤为致命，因为读者往往并不会逐字阅读方法，而是会直接抓住一两个明显失真的数字，进而破坏整页的可信度与戏谑效果。
                     </p>
                     <p>
-                        为了彻底解决上述行业痛点，本文提出了端到端的顶会论文量产系统RubbishLM，核心贡献如下：
+                        为此，本文提出端到端论文量产系统 <b>RubbishLM</b>，目标不是预测任何真实顶会的官方录用结果，而是生成一份在结构、口径与展示层面都更完整的“归档就绪稿件”。本文的主要贡献如下：
                     </p>
                     <p>
-                        1. 提出首个从关键词输入到可投稿PDF输出的全自动化顶会论文生成框架，无需人工干预即可完成符合顶会格式要求的完整论文。<br>
-                        2. 设计了<b>审稿人偏好对齐模块（Reviewer-Aligned Module, RAM）</b>，基于120万条公开审稿意见训练，自动生成符合审稿人预期的内容，将拒稿风险降低99%。<br>
-                        3. 构建了<b>RubbishSet</b>数据集，涵盖2015-2025年ICML、NeurIPS、ICLR三大顶会所有录用论文，共120万篇高质量标注数据，开源供社区使用。<br>
-                        4. 大规模对照实验表明，RubbishLM生成的论文顶会录用率达0.021%，远超GPT-4o等基线模型，同时生成效率提升100倍，查重率低至2.1%。
+                        1. 提出一套从关键词输入到归档页面输出的全流程框架，统一生成标题、摘要、正文、图表、表格、作者信息与投稿联系信息。<br>
+                        2. 设计 <b>审稿人偏好对齐模块（Reviewer-Aligned Module, RAM）</b>，基于公开评语片段与人工整理模板生成更符合“审稿口吻”的论述方式，减少明显的表述短板。<br>
+                        3. 构建 <b>RubbishSet</b> 数据集与 <b>ArchiveBench-300</b> 评测集，其中前者包含公开论文文本、章节模板、评语片段与标题摘要对，后者用于度量归档就绪率、细节一致性与审稿模拟评分。<br>
+                        4. 实验表明，RubbishLM 在归档就绪率、一致性得分和低重复率方面均优于通用基线模型，并能显著降低“数字口径失真”“图文不一致”“投稿信息缺失”等页面级错误。
                     </p>
 
                     <h2 id="related-work">2. Related Work | 相关工作</h2>
                     <h3>2.1 大语言模型与学术写作</h3>
                     <p>
-                        预训练语言模型在学术文本生成领域已有广泛探索。Beltagy等人<sup>[1]</sup>提出了SciBERT，基于科学文献预训练，显著提升了学术文本的理解与生成能力，但仅能实现短文本生成，无法完成整篇论文的连贯创作。Kuhn等人<sup>[2]</sup>探索了GPT-4在ACL论文写作中的应用，验证了大语言模型生成学术内容的可行性，但未针对顶会投稿的特定需求进行优化，无法解决审稿人拒稿的核心痛点。
+                        预训练语言模型在学术文本生成领域已有广泛探索。Beltagy 等人<sup>[1]</sup>提出的 SciBERT 提升了科学文本的理解与生成能力，但主要面向句子或段落级任务，难以直接生成结构完整的长篇论文。围绕通用大模型的学术写作实验也表明，模型可以较快写出“像论文”的段落，却经常在逻辑承接、实验细节与引用准确性方面暴露缺陷。
                     </p>
-                    <h3>2.2 审稿人偏好建模</h3>
+                    <h3>2.2 审稿口吻建模</h3>
                     <p>
-                        针对顶会审稿的随机性问题，已有研究开始探索审稿人偏好的建模。Kang等人<sup>[3]</sup>提出了基于情感分析的审稿意见预测模型，能够预判审稿人的正面/负面倾向，但无法从根源上生成符合审稿人预期的内容。Sculley等人<sup>[4]</sup>分析了机器学习顶会的10万条审稿意见，总结出“创新性不足”、“实验不充分”、“相关工作缺失”三大万能拒稿理由，为本研究的审稿人对齐模块提供了核心依据。
+                        针对学术评审中的写作风格问题，已有工作开始尝试从公开评审文本中总结常见偏好与高频拒稿理由，例如“创新性不足”“实验不充分”“相关工作不全”等。这类研究虽然未必能真正提升科学贡献，却能帮助系统学习更像审稿语境的措辞与论证路径，为本文的 RAM 模块提供风格先验。
                     </p>
-                    <h3>2.3 本文与现有工作的区别</h3>
+                    <h3>2.3 页面级一致性质检</h3>
                     <p>
-                        与现有工作相比，本文首次实现了顶会论文的端到端全流程自动化生成，同时创新性地引入了审稿人偏好对齐模块，从内容创作的根源上降低拒稿风险，而非事后预测审稿意见。此外，本文构建的RubbishSet数据集是目前最大的顶会论文数据集，为后续学术写作相关研究提供了高质量的基础数据。
+                        与传统长文本生成不同，归档展示型页面还需要保证跨区域的一致性：摘要里的核心结论要能在表格中找到对应证据，图注要与正文解释匹配，作者信息与投稿信息要在页面侧栏和正文中保持统一。现有研究对这类“页面级细节错误”的关注相对不足，而这恰恰是自动生成稿件最容易翻车的部分。
                     </p>
 
                     <h2 id="methodology">3. Methodology | 方法论</h2>
                     <p>
-                        RubbishLM的整体架构如图1所示，分为5个核心模块，完整实现从关键词到可投稿PDF的全流程自动化。整体生成流程为：关键词输入 → 大纲智能生成 → 分模块内容填充 → 审稿人偏好对齐 → 实验结果生成 → 格式渲染 → 输出PDF。
+                        RubbishLM 的整体架构如图1所示，系统包含 5 个核心模块：大纲生成、相关工作拼接、RAM 审稿口吻对齐、RFM 结果编排，以及 QC 一致性质检。整体流程为：关键词输入 → 结构规划 → 内容填充 → 口吻对齐 → 结果编排 → 质量校验 → 归档页面输出。
                     </p>
 
-                    <!-- 模型架构图（SVG矢量，适配双主题） -->
                     <div class="figure-wrapper">
                         <div class="figure-container">
-                            <svg width="100%" height="220" viewBox="0 0 800 220" xmlns="http://www.w3.org/2000/svg">
+                            <svg width="100%" height="240" viewBox="0 0 980 240" xmlns="http://www.w3.org/2000/svg">
                                 <defs>
-                                    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                                        <stop offset="0%" style="stop-color:#165DFF;stop-opacity:1" />
-                                        <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
+                                    <linearGradient id="gradBlue" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" stop-color="#165DFF"/>
+                                        <stop offset="100%" stop-color="#7c3aed"/>
                                     </linearGradient>
-                                </defs>
-                                <!-- 背景 -->
-                                <rect width="800" height="220" fill="var(--bg-main)" />
-                                <!-- 模块框 -->
-                                <g>
-                                    <rect x="50" y="80" width="120" height="60" rx="8" fill="url(#grad)" stroke="var(--border)" stroke-width="1" />
-                                    <text x="110" y="115" text-anchor="middle" fill="white" font-size="14" font-weight="600">大纲生成</text>
-                                    <text x="110" y="135" text-anchor="middle" fill="white" font-size="12">Outline Generation</text>
-                                </g>
-                                <g>
-                                    <rect x="200" y="80" width="120" height="60" rx="8" fill="url(#grad)" stroke="var(--border)" stroke-width="1" />
-                                    <text x="260" y="115" text-anchor="middle" fill="white" font-size="14" font-weight="600">相关工作缝合</text>
-                                    <text x="260" y="135" text-anchor="middle" fill="white" font-size="12">Related Work</text>
-                                </g>
-                                <g>
-                                    <rect x="350" y="80" width="120" height="60" rx="8" fill="url(#grad)" stroke="var(--border)" stroke-width="1" />
-                                    <text x="410" y="115" text-anchor="middle" fill="white" font-size="14" font-weight="600">RAM模块</text>
-                                    <text x="410" y="135" text-anchor="middle" fill="white" font-size="12">Reviewer Aligned</text>
-                                </g>
-                                <g>
-                                    <rect x="500" y="80" width="120" height="60" rx="8" fill="url(#grad)" stroke="var(--border)" stroke-width="1" />
-                                    <text x="560" y="115" text-anchor="middle" fill="white" font-size="14" font-weight="600">RFM模块</text>
-                                    <text x="560" y="135" text-anchor="middle" fill="white" font-size="12">Result Fabrication</text>
-                                </g>
-                                <!-- 箭头 -->
-                                <line x1="170" y1="110" x2="200" y2="110" stroke="var(--text-secondary)" stroke-width="2" marker-end="url(#arrow)" />
-                                <line x1="320" y1="110" x2="350" y2="110" stroke="var(--text-secondary)" stroke-width="2" marker-end="url(#arrow)" />
-                                <line x1="470" y1="110" x2="500" y2="110" stroke="var(--text-secondary)" stroke-width="2" marker-end="url(#arrow)" />
-                                <line x1="620" y1="110" x2="650" y2="110" stroke="var(--text-secondary)" stroke-width="2" marker-end="url(#arrow)" />
-                                <!-- 输入输出 -->
-                                <text x="30" y="110" text-anchor="middle" fill="var(--text-primary)" font-size="14" font-weight="600">关键词输入</text>
-                                <text x="770" y="110" text-anchor="middle" fill="var(--text-primary)" font-size="14" font-weight="600">论文输出</text>
-                                <!-- 标题 -->
-                                <text x="400" y="40" text-anchor="middle" fill="var(--text-primary)" font-size="18" font-weight="700">图1 RubbishLM整体架构图</text>
-                                <!-- 箭头定义 -->
-                                <defs>
                                     <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-                                        <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--text-secondary)" />
+                                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b" />
                                     </marker>
                                 </defs>
+                                <rect width="980" height="240" fill="var(--bg-main)" />
+                                <text x="490" y="36" text-anchor="middle" fill="var(--text-primary)" font-size="18" font-weight="700">图1 RubbishLM 整体流程与质检闭环</text>
+
+                                <text x="55" y="126" text-anchor="middle" fill="var(--text-primary)" font-size="14" font-weight="600">关键词</text>
+                                <text x="55" y="146" text-anchor="middle" fill="var(--text-primary)" font-size="12">Prompt</text>
+
+                                <g>
+                                    <rect x="110" y="86" width="140" height="64" rx="10" fill="url(#gradBlue)"/>
+                                    <text x="180" y="115" text-anchor="middle" fill="white" font-size="14" font-weight="700">大纲生成</text>
+                                    <text x="180" y="136" text-anchor="middle" fill="white" font-size="12">Outline</text>
+                                </g>
+                                <g>
+                                    <rect x="280" y="86" width="140" height="64" rx="10" fill="url(#gradBlue)"/>
+                                    <text x="350" y="115" text-anchor="middle" fill="white" font-size="14" font-weight="700">相关工作拼接</text>
+                                    <text x="350" y="136" text-anchor="middle" fill="white" font-size="12">Related Work</text>
+                                </g>
+                                <g>
+                                    <rect x="450" y="86" width="140" height="64" rx="10" fill="url(#gradBlue)"/>
+                                    <text x="520" y="115" text-anchor="middle" fill="white" font-size="14" font-weight="700">RAM 口吻对齐</text>
+                                    <text x="520" y="136" text-anchor="middle" fill="white" font-size="12">Reviewer Alignment</text>
+                                </g>
+                                <g>
+                                    <rect x="620" y="86" width="140" height="64" rx="10" fill="url(#gradBlue)"/>
+                                    <text x="690" y="115" text-anchor="middle" fill="white" font-size="14" font-weight="700">RFM 结果编排</text>
+                                    <text x="690" y="136" text-anchor="middle" fill="white" font-size="12">Result Framing</text>
+                                </g>
+                                <g>
+                                    <rect x="790" y="86" width="120" height="64" rx="10" fill="url(#gradBlue)"/>
+                                    <text x="850" y="115" text-anchor="middle" fill="white" font-size="14" font-weight="700">QC 质检</text>
+                                    <text x="850" y="136" text-anchor="middle" fill="white" font-size="12">Consistency Check</text>
+                                </g>
+
+                                <line x1="82" y1="118" x2="110" y2="118" stroke="#64748b" stroke-width="2.4" marker-end="url(#arrow)"/>
+                                <line x1="250" y1="118" x2="280" y2="118" stroke="#64748b" stroke-width="2.4" marker-end="url(#arrow)"/>
+                                <line x1="420" y1="118" x2="450" y2="118" stroke="#64748b" stroke-width="2.4" marker-end="url(#arrow)"/>
+                                <line x1="590" y1="118" x2="620" y2="118" stroke="#64748b" stroke-width="2.4" marker-end="url(#arrow)"/>
+                                <line x1="760" y1="118" x2="790" y2="118" stroke="#64748b" stroke-width="2.4" marker-end="url(#arrow)"/>
+
+                                <rect x="278" y="174" width="430" height="34" rx="17" fill="none" stroke="#94a3b8" stroke-dasharray="6 6" />
+                                <text x="493" y="196" text-anchor="middle" fill="var(--text-secondary)" font-size="12">细节错误回流：数字口径、图文对应、作者信息、投稿联系方式</text>
                             </svg>
                         </div>
-                        <p class="figure-caption">图1 RubbishLM端到端论文量产系统整体架构</p>
+                        <p class="figure-caption">图1 从关键词到归档页面的五阶段流程，并显式加入一致性质检闭环</p>
                     </div>
 
                     <h3>3.1 大纲智能生成模块</h3>
                     <p>
-                        基于链式思维（Chain-of-Thought, CoT），本模块根据输入的关键词，自动生成符合顶会规范的论文大纲，包含引言、相关工作、方法论、实验、结论、参考文献等完整章节。大纲生成的概率模型如下：
+                        基于链式思维（Chain-of-Thought, CoT），本模块根据输入关键词自动生成符合论文规范的章节骨架，包含引言、相关工作、方法、实验、结论、参考文献以及归档页面所需的题目、作者与投稿信息。其生成概率可写为：
                     </p>
                     <div class="formula-wrapper">
-                        \[ P(O|K) = \prod_{i=1}^N P(o_i | o_1, o_2, ..., o_{i-1}, K) \]
+                        \[ P(O|K) = \prod_{i=1}^N P(o_i \mid o_1, o_2, ..., o_{i-1}, K) \]
                         <span class="formula-number">(1)</span>
                     </div>
                     <p>
-                        其中，\( O = \{o_1, o_2, ..., o_N\} \) 为生成的大纲，\( K \) 为输入的关键词，\( N \) 为大纲的章节数量。模型会自动为每个章节生成子标题，保证逻辑连贯，符合顶会的写作范式。
+                        其中，\( O = \{o_1, o_2, ..., o_N\} \) 表示章节大纲，\( K \) 为输入关键词，\( N \) 为章节数量。该模块的目标不是生成漂亮句子，而是优先保证整篇文章具备稳定的结构骨架。
                     </p>
 
                     <h3>3.2 审稿人偏好对齐模块（RAM）</h3>
                     <p>
-                        本模块是RubbishLM的核心创新点，基于120万条公开审稿意见训练，学习审稿人的评分偏好，自动生成符合预期的内容。我们将审稿人的录用评分建模为三个核心维度的加权和：
+                        RAM 学习公开评语片段与人工整理的审稿模板，重点建模“像审稿意见的关注点”，而非预测真实审稿人的决定。我们将模拟审稿得分建模为三个维度的加权和：
                     </p>
                     <div class="formula-wrapper">
-                        \[ \text{ReviewerScore}(C) = \alpha \cdot \text{Novelty}(C) + \beta \cdot \text{Technicality}(C) + \gamma \cdot \text{RelatedWork}(C) \]
+                        \[ \text{ReviewerScore}(C) = \alpha \cdot \text{NoveltyCue}(C) + \beta \cdot \text{Technicality}(C) + \gamma \cdot \text{Completeness}(C) \]
                         <span class="formula-number">(2)</span>
                     </div>
                     <p>
-                        其中，\( C \) 为论文内容，\( \alpha, \beta, \gamma \) 为通过审稿数据学习到的权重（分别为0.4、0.35、0.25）。\( \text{Novelty}(C) \) 为伪创新点生成模块，自动为论文提炼3-4个“看起来有创新”的贡献点；\( \text{Technicality}(C) \) 为公式复杂度优化模块，自动为方法论添加足够复杂的公式，提升论文的技术观感；\( \text{RelatedWork}(C) \) 为相关工作引用模块，自动引用足够多的顶会论文，避免“相关工作缺失”的拒稿理由。
+                        其中，\( C \) 为稿件内容，\( \alpha, \beta, \gamma \) 分别控制“看起来有创新”“看起来技术性够强”“看起来写完整了”三种感知维度。RAM 的作用，是让生成结果更接近一篇会被认真阅读的稿件，而不是一堆相互脱节的段落。
                     </p>
 
-                    <h3>3.3 实验结果合理编造模块（RFM）</h3>
+                    <h3>3.3 结果编排模块（RFM）</h3>
                     <p>
-                        本模块自动生成符合顶会预期的实验结果，保证生成的结果刚好超过现有SOTA模型0.1-0.5个百分点，既不会过于离谱，又能体现“创新性”。实验结果的约束公式如下：
+                        RFM 不追求夸张到离谱的“神仙提升”，而是为图表、表格与结论生成更克制、更自洽的数值与叙述，使其能够在不同版块中彼此对应。我们通过一个局部约束控制结果与基线之间的差距：
                     </p>
                     <div class="formula-wrapper">
-                        \[ \text{Acc}(M) = \max_{B \in \text{Baselines}} \text{Acc}(B) + \epsilon, \quad \epsilon \in [0.1, 0.5] \]
+                        \[ m(M) = \max_{B \in \mathcal{B}} m(B) + \epsilon, \quad \epsilon \in [0.3, 3.0] \]
                         <span class="formula-number">(3)</span>
                     </div>
                     <p>
-                        其中，\( M \) 为本文提出的模型，\( B \) 为基线模型集合，\( \epsilon \) 为刚好超过SOTA的微小增量。同时，模块会自动生成平滑的loss曲线、消融实验表格，保证实验部分的完整性与专业性。
+                        其中，\( m(\cdot) \) 为某项页面级指标，\( \mathcal{B} \) 为基线模型集合，\( \epsilon \) 为控制在合理范围内的小幅改进。该设计的目标是减少“数字看起来像 bug”的极端结果，而不是制造更大的噱头。
+                    </p>
+
+                    <h3>3.4 一致性质检模块（QC）</h3>
+                    <p>
+                        针对自动稿件中最常见的细节错误，我们加入显式的质量校验流程，对标题、摘要、正文、表格、图注、作者信息和投稿联系方式进行交叉比对，并输出一致性得分：
+                    </p>
+                    <div class="formula-wrapper">
+                        \[ \text{CS}(D) = 100 \times \left(1 - \sum_{i=1}^{K} w_i \cdot e_i(D) \right) \]
+                        <span class="formula-number">(4)</span>
+                    </div>
+                    <p>
+                        其中，\( D \) 表示整篇稿件页面，\( e_i(D) \in [0,1] \) 表示第 \( i \) 类错误是否发生，\( w_i \) 为对应惩罚权重。QC 模块特别关注“数字口径失真”“图文不一致”“作者/投稿信息遗漏”等页面级错误，这也是本文对现有自动写作系统最重要的补充。
                     </p>
 
                     <h2 id="experiments">4. Experiments | 实验</h2>
+                    <p>
+                        本节所有结果均来自站内模拟归档基准，不代表任何真实学术会议的官方投稿量、录用率或审稿结论。我们的目标是衡量一篇自动稿件能否顺利通过展示与归档流程，而不是声称预测真实顶会结果。
+                    </p>
+
                     <h3>4.1 实验设置</h3>
                     <p>
-                        <strong>数据集：</strong> 采用本文构建的RubbishSet数据集，包含2015-2025年ICML、NeurIPS、ICLR三大顶会的120万篇录用论文，按照8:1:1的比例划分为训练集、验证集、测试集。
+                        <strong>数据集与评测集：</strong> 我们构建了 RubbishSet 数据集，包含 8,420 篇公开论文正文或章节片段、27,600 条章节模板、14,800 条公开评语片段以及 3,200 组标题-摘要对，经切分与清洗后形成 61,240 个章节级训练样本。测试阶段使用 ArchiveBench-300，共 300 个主题提示，覆盖多模态、Agent、评测基准、负结果包装、学术吐槽等 6 类场景。
+                    </p>
+
+                    <p class="table-caption">表1 数据集组成与规模</p>
+                    <table class="paper-table">
+                        <thead>
+                            <tr>
+                                <th>组成部分</th>
+                                <th>数量</th>
+                                <th>说明</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>公开论文正文/章节片段</td>
+                                <td>8,420</td>
+                                <td>用于学习学术叙事与章节结构</td>
+                            </tr>
+                            <tr>
+                                <td>章节模板</td>
+                                <td>27,600</td>
+                                <td>覆盖摘要、方法、实验、结论等常见段式</td>
+                            </tr>
+                            <tr>
+                                <td>公开评语片段</td>
+                                <td>14,800</td>
+                                <td>用于审稿口吻与高频拒稿理由建模</td>
+                            </tr>
+                            <tr>
+                                <td>标题-摘要配对</td>
+                                <td>3,200</td>
+                                <td>用于标题摘要一致性训练</td>
+                            </tr>
+                            <tr>
+                                <td><strong>章节级训练样本</strong></td>
+                                <td><strong>61,240</strong></td>
+                                <td><strong>清洗、切分、去重后的最终样本量</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p>
+                        <strong>基线模型：</strong> 选取 SciBERT、Gemini Advanced、Claude 3 Opus、GPT-4o 作为基线。所有模型均在相同主题提示集合上生成完整稿件，然后使用统一的页面检查器与人工抽样复核进行评估。
                     </p>
                     <p>
-                        <strong>基线模型：</strong> 选取当前主流的学术写作模型作为基线，包括SciBERT、Gemini Advanced、Claude 3 Opus、GPT-4o，所有模型均采用默认参数，保证实验的公平性。
+                        <strong>评估指标：</strong> 我们采用 5 个核心指标：① 归档就绪率（Archive-Ready Rate, ARR），表示通过结构与格式检查的比例；② 平均生成时长（Time per Paper, TPP），单位为分钟；③ 内容重复率（Duplication Rate, DR），越低越好；④ 一致性得分（Consistency Score, CS），衡量跨模块口径一致性；⑤ 审稿模拟分（Reviewer Simulation Score, RSS），由模板化审稿器输出的 10 分制分数。
                     </p>
                     <p>
-                        <strong>评估指标：</strong> 采用4个核心指标评估模型性能：① 录用率（Acceptance Rate, AR）：投稿至顶会后的录用概率；② 生成速度（Tokens Per Second, TPS）：每秒生成的token数量；③ 查重率（Duplication Rate, DR）：知网/Google Scholar的查重结果；④ 审稿人评分（Reviewer Score, RS）：10分制的审稿人平均评分。
-                    </p>
-                    <p>
-                        <strong>实现细节：</strong> RubbishLM基于Llama 3 70B基座模型，在RubbishSet上进行微调，训练硬件为4张NVIDIA A100 80G GPU，训练步数100步，batch size 32，学习率2e-5，采用AdamW优化器。
+                        <strong>实现细节：</strong> RubbishLM 基于 Llama 3 8B-Instruct，采用 LoRA 方式在 4 张 NVIDIA A100 80G GPU 上训练，最大长度 8192，batch size 16，训练 3 个 epoch，学习率 1e-5，优化器为 AdamW。
                     </p>
 
                     <h3>4.2 主实验结果</h3>
                     <p>
-                        主实验结果如表1所示。可以看到，RubbishLM在所有核心指标上均超过了现有基线模型：录用率达到0.021%，是GPT-4o的1.4倍，是人工投稿平均水平的2.1倍；生成速度达到92.7 tokens/s，远超GPT-4o的62.3 tokens/s；查重率低至2.1%，远低于所有基线模型；审稿人平均评分达到6.2/10，是唯一超过6分的模型。
+                        主实验结果如表2所示。RubbishLM 在归档就绪率、一致性得分与低重复率上均显著优于通用基线，说明其优势主要来自“把细节修齐”，而非单纯堆砌更长的文字。尤其是在 ARR 和 CS 两项指标上，RubbishLM 相比 GPT-4o 分别提升 9.8 个百分点和 7.8 个百分点，这恰好对应了自动稿件最容易失手的页面级问题。
                     </p>
-                    <p class="table-caption">表1 主实验结果对比</p>
+                    <p class="table-caption">表2 主实验结果对比</p>
                     <table class="paper-table">
                         <thead>
                             <tr>
                                 <th>模型</th>
-                                <th>录用率 AR↑</th>
-                                <th>生成速度 TPS↑</th>
-                                <th>查重率 DR↓</th>
-                                <th>审稿人评分 RS↑</th>
+                                <th>ARR↑</th>
+                                <th>TPP(min)↓</th>
+                                <th>DR↓</th>
+                                <th>CS↑</th>
+                                <th>RSS↑</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>SciBERT</td>
-                                <td>0.001%</td>
-                                <td>120.5</td>
-                                <td>12.3%</td>
-                                <td>1.2/10</td>
+                                <td>41.8%</td>
+                                <td>18.6</td>
+                                <td>14.2%</td>
+                                <td>62.1</td>
+                                <td>3.1/10</td>
                             </tr>
                             <tr>
                                 <td>Gemini Advanced</td>
-                                <td>0.008%</td>
-                                <td>85.2</td>
-                                <td>5.6%</td>
-                                <td>3.5/10</td>
+                                <td>68.4%</td>
+                                <td>9.8</td>
+                                <td>7.5%</td>
+                                <td>78.6</td>
+                                <td>5.6/10</td>
                             </tr>
                             <tr>
                                 <td>Claude 3 Opus</td>
-                                <td>0.011%</td>
-                                <td>78.6</td>
-                                <td>4.2%</td>
-                                <td>4.1/10</td>
+                                <td>72.9%</td>
+                                <td>10.7</td>
+                                <td>6.8%</td>
+                                <td>81.2</td>
+                                <td>5.9/10</td>
                             </tr>
                             <tr>
                                 <td>GPT-4o</td>
-                                <td>0.015%</td>
-                                <td>62.3</td>
-                                <td>3.8%</td>
-                                <td>4.8/10</td>
+                                <td>78.6%</td>
+                                <td>8.3</td>
+                                <td>6.1%</td>
+                                <td>84.7</td>
+                                <td>6.3/10</td>
                             </tr>
                             <tr>
                                 <td><strong>RubbishLM (Ours)</strong></td>
-                                <td><strong>0.021%</strong></td>
-                                <td><strong>92.7</strong></td>
-                                <td><strong>2.1%</strong></td>
-                                <td><strong>6.2/10</strong></td>
+                                <td><strong>88.4%</strong></td>
+                                <td><strong>6.7</strong></td>
+                                <td><strong>4.3%</strong></td>
+                                <td><strong>92.5</strong></td>
+                                <td><strong>7.1/10</strong></td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <!-- 训练Loss曲线图（可交互Chart.js） -->
                     <div class="figure-wrapper">
-                        <p class="figure-caption">图2 模型训练Loss曲线（完美下降，无震荡）</p>
                         <div class="figure-container">
-                            <canvas id="lossCurve" width="800" height="300"></canvas>
+                            <img class="figure-img" src="assets/main-metrics.svg" alt="主实验关键指标对比图">
                         </div>
+                        <p class="figure-caption">图2 主实验关键指标的归一化可视化（ARR、CS、低重复率与 RSS×10）</p>
+                    </div>
+
+                    <div class="figure-wrapper">
+                        <div class="figure-container">
+                            <img class="figure-img" src="assets/loss-curves.svg" alt="训练与验证损失曲线">
+                        </div>
+                        <p class="figure-caption">图3 训练与验证损失曲线，显示模型在 3 个 epoch 内稳定收敛</p>
                     </div>
 
                     <h3>4.3 消融实验</h3>
                     <p>
-                        为了验证每个模块的有效性，我们进行了消融实验，结果如表2所示。可以看到，每个模块都对最终性能有正向提升，其中审稿人偏好对齐模块（RAM）的提升最为显著，录用率从0.015%提升至0.019%，审稿人评分从4.8/10提升至5.8/10，证明了该模块的核心价值。实验结果编造模块（RFM）也带来了明显的性能提升，验证了合理的实验结果对录用率的重要性。
+                        为了验证各模块对页面质量的作用，我们逐步向基础模板系统中加入大纲生成、RAM、RFM 和 QC 模块。结果如表3所示：大纲生成模块主要提升结构完整性，RAM 提升审稿模拟分，RFM 改善结果与结论之间的对齐，而 QC 对 ARR 和 CS 的提升最为直接，说明显式质检确实能够消除大量细节错误。
                     </p>
-                    <p class="table-caption">表2 消融实验结果</p>
+                    <p class="table-caption">表3 消融实验结果</p>
                     <table class="paper-table">
                         <thead>
                             <tr>
                                 <th>模型配置</th>
-                                <th>录用率 AR↑</th>
-                                <th>审稿人评分 RS↑</th>
+                                <th>ARR↑</th>
+                                <th>CS↑</th>
+                                <th>RSS↑</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>基线（GPT-4o）</td>
-                                <td>0.015%</td>
-                                <td>4.8/10</td>
-                            </tr>
-                            <tr>
-                                <td>+ 大纲生成模块</td>
-                                <td>0.016%</td>
-                                <td>5.0/10</td>
-                            </tr>
-                            <tr>
-                                <td>+ 审稿人对齐模块 RAM</td>
-                                <td>0.019%</td>
-                                <td>5.8/10</td>
-                            </tr>
-                            <tr>
-                                <td>+ 结果编造模块 RFM</td>
-                                <td>0.020%</td>
+                                <td>基础模板系统</td>
+                                <td>73.2%</td>
+                                <td>80.4</td>
                                 <td>6.0/10</td>
                             </tr>
                             <tr>
-                                <td>+ 全模块（Ours）</td>
-                                <td><strong>0.021%</strong></td>
-                                <td><strong>6.2/10</strong></td>
+                                <td>+ 大纲生成</td>
+                                <td>79.4%</td>
+                                <td>84.9</td>
+                                <td>6.3/10</td>
+                            </tr>
+                            <tr>
+                                <td>+ RAM</td>
+                                <td>84.1%</td>
+                                <td>89.1</td>
+                                <td>6.8/10</td>
+                            </tr>
+                            <tr>
+                                <td>+ RFM</td>
+                                <td>85.6%</td>
+                                <td>90.3</td>
+                                <td>6.9/10</td>
+                            </tr>
+                            <tr>
+                                <td>+ QC（全模块）</td>
+                                <td><strong>88.4%</strong></td>
+                                <td><strong>92.5</strong></td>
+                                <td><strong>7.1/10</strong></td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <!-- 消融实验柱状图（可交互） -->
                     <div class="figure-wrapper">
-                        <p class="figure-caption">图3 消融实验审稿人评分对比</p>
                         <div class="figure-container">
-                            <canvas id="ablationBar" width="800" height="300"></canvas>
+                            <img class="figure-img" src="assets/ablation-trend.svg" alt="消融趋势图">
                         </div>
+                        <p class="figure-caption">图4 消融实验趋势：随着模块增加，ARR 与 RSS 稳步提升</p>
                     </div>
 
-                    <!-- SOTA对比雷达图 -->
+                    <h3>4.4 错误类型分析</h3>
+                    <p>
+                        除了总体指标外，我们进一步统计了自动稿件中最常见的细节错误类型。表4与图5表明，QC 模块对“数字口径失真”“图文不一致”“链接缺失”“投稿信息遗漏”等错误尤其有效，这类错误往往不会被长文本困惑度直接捕捉，却最影响读者对页面的直观判断。
+                    </p>
+                    <p class="table-caption">表4 页面级错误统计</p>
+                    <table class="paper-table">
+                        <thead>
+                            <tr>
+                                <th>错误类型</th>
+                                <th>原始自动稿↓</th>
+                                <th>加入 QC 后↓</th>
+                                <th>典型表现</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>数字口径失真</td>
+                                <td>19</td>
+                                <td>4</td>
+                                <td>正文、摘要、表格出现互不一致的精确数字</td>
+                            </tr>
+                            <tr>
+                                <td>图表/正文不一致</td>
+                                <td>14</td>
+                                <td>3</td>
+                                <td>图注说的是 A，正文解释成 B</td>
+                            </tr>
+                            <tr>
+                                <td>引用或链接缺失</td>
+                                <td>12</td>
+                                <td>1</td>
+                                <td>按钮、参考文献或稿件链接不可用</td>
+                            </tr>
+                            <tr>
+                                <td>章节结构缺口</td>
+                                <td>10</td>
+                                <td>2</td>
+                                <td>缺少实验设置、结论或投稿联系信息</td>
+                            </tr>
+                            <tr>
+                                <td>作者/投稿信息遗漏</td>
+                                <td>7</td>
+                                <td>0</td>
+                                <td>作者邮箱、投稿入口或归档元信息缺失</td>
+                            </tr>
+                            <tr>
+                                <td>标题摘要重复</td>
+                                <td>11</td>
+                                <td>5</td>
+                                <td>标题关键词在摘要首句机械复述</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
                     <div class="figure-wrapper">
-                        <p class="figure-caption">图4 各模型核心能力雷达图对比</p>
                         <div class="figure-container">
-                            <canvas id="sotaRadar" width="800" height="400"></canvas>
+                            <img class="figure-img" src="assets/error-analysis.svg" alt="错误分析图">
                         </div>
+                        <p class="figure-caption">图5 页面级错误在加入 QC 模块前后的数量变化</p>
                     </div>
+
 
                     <h2 id="limitations">5. Limitations | 局限性分析</h2>
                     <p>
@@ -687,7 +820,7 @@
 
                     <h2 id="conclusion">7. Conclusion | 结论</h2>
                     <p>
-                        本文提出了RubbishLM，首个面向顶会投稿的端到端论文量产系统，彻底解决了科研工作者论文写作的核心痛点。通过整合大纲生成、审稿人偏好对齐、实验结果编造等核心模块，系统生成的论文在录用率、生成效率、查重率等核心指标上均远超现有基线模型。本研究为学术写作自动化提供了全新的解决方案，同时也为顶会审稿机制的优化提供了参考。未来，我们会继续优化模型性能，拓展支持的学科领域，助力科研工作者实现“灌水论文自由”。
+                        本文提出了 RubbishLM，一个面向归档展示与投稿初稿生成的端到端系统。与仅能生成局部段落的传统写作工具不同，RubbishLM 将结构规划、审稿口吻对齐、结果编排和一致性质检整合在统一流程中，使自动稿件在 ARR、CS、RSS 等页面级指标上显著优于通用基线。更重要的是，本文强调：一篇讽刺型学术稿件的“可信度”并不来自夸张数字，而来自细节是否自洽。未来我们将继续扩展更多栏目模板、案例图表与错误检查规则，使归档页面更完整、也更好笑。
                     </p>
 
                     <h2 id="acknowledgements">Acknowledgements | 致谢</h2>
@@ -721,26 +854,24 @@
         <i class="fas fa-arrow-up"></i>
     </button>
 
+    
     <!-- 交互JS -->
     <script>
-        // 主题切换（和主站统一）
         const themeToggle = document.getElementById('theme-toggle');
-        const html = document.documentElement;
+        const htmlEl = document.documentElement;
+
         themeToggle.addEventListener('click', () => {
-            html.classList.toggle('dark-theme');
+            htmlEl.classList.toggle('dark-theme');
             const icon = themeToggle.querySelector('i');
-            if (html.classList.contains('dark-theme')) {
+            if (htmlEl.classList.contains('dark-theme')) {
                 icon.classList.remove('fa-moon');
                 icon.classList.add('fa-sun');
             } else {
                 icon.classList.remove('fa-sun');
                 icon.classList.add('fa-moon');
             }
-            // 图表主题更新
-            updateChartsTheme();
         });
 
-        // 导航栏滚动效果
         const navbar = document.getElementById('navbar');
         window.addEventListener('scroll', () => {
             if (window.scrollY > 50) {
@@ -750,7 +881,6 @@
             }
         });
 
-        // 目录高亮联动
         const tocLinks = document.querySelectorAll('.toc-link');
         const sections = document.querySelectorAll('.paper-content h2, .abstract-block');
         window.addEventListener('scroll', () => {
@@ -769,7 +899,6 @@
             });
         });
 
-        // 回到顶部
         const backToTop = document.getElementById('back-to-top');
         window.addEventListener('scroll', () => {
             if (window.scrollY > 300) {
@@ -778,172 +907,9 @@
                 backToTop.classList.remove('show');
             }
         });
+
         backToTop.addEventListener('click', () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-
-        // 图表主题配置
-        const getChartTheme = () => {
-            const isDark = html.classList.contains('dark-theme');
-            return {
-                textColor: isDark ? '#cbd5e1' : '#1e293b',
-                gridColor: isDark ? '#334155' : '#e2e8f0',
-                primaryColor: '#165DFF',
-                accentColor: '#7c3aed'
-            };
-        };
-
-        // 1. Loss曲线图表
-        let lossChart;
-        const initLossCurve = () => {
-            const ctx = document.getElementById('lossCurve').getContext('2d');
-            const theme = getChartTheme();
-            lossChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: Array.from({length: 50}, (_, i) => i+1),
-                    datasets: [{
-                        label: '训练Loss',
-                        data: Array.from({length: 50}, (_, i) => 3 - (i * 0.058) + Math.random() * 0.05),
-                        borderColor: theme.primaryColor,
-                        backgroundColor: `${theme.primaryColor}20`,
-                        tension: 0.4,
-                        fill: true,
-                        pointRadius: 0,
-                        borderWidth: 3
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { labels: { color: theme.textColor } }
-                    },
-                    scales: {
-                        x: {
-                            title: { display: true, text: '训练步数', color: theme.textColor },
-                            grid: { color: theme.gridColor },
-                            ticks: { color: theme.textColor }
-                        },
-                        y: {
-                            title: { display: true, text: 'Loss值', color: theme.textColor },
-                            grid: { color: theme.gridColor },
-                            ticks: { color: theme.textColor },
-                            reverse: true
-                        }
-                    }
-                }
-            });
-        };
-
-        // 2. 消融实验柱状图
-        let ablationChart;
-        const initAblationBar = () => {
-            const ctx = document.getElementById('ablationBar').getContext('2d');
-            const theme = getChartTheme();
-            ablationChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['基线GPT-4o', '+大纲生成', '+RAM模块', '+RFM模块', '全模块Ours'],
-                    datasets: [{
-                        label: '审稿人平均评分（10分制）',
-                        data: [4.8, 5.0, 5.8, 6.0, 6.2],
-                        backgroundColor: [
-                            `${theme.primaryColor}60`,
-                            `${theme.primaryColor}70`,
-                            `${theme.primaryColor}80`,
-                            `${theme.primaryColor}90`,
-                            theme.primaryColor
-                        ],
-                        borderRadius: 6,
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { labels: { color: theme.textColor } }
-                    },
-                    scales: {
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: theme.textColor }
-                        },
-                        y: {
-                            min: 0,
-                            max: 10,
-                            grid: { color: theme.gridColor },
-                            ticks: { color: theme.textColor }
-                        }
-                    }
-                }
-            });
-        };
-
-        // 3. SOTA雷达图
-        let radarChart;
-        const initRadarChart = () => {
-            const ctx = document.getElementById('sotaRadar').getContext('2d');
-            const theme = getChartTheme();
-            radarChart = new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: ['录用率', '生成速度', '低查重率', '审稿人评分', '逻辑连贯性'],
-                    datasets: [
-                        {
-                            label: 'GPT-4o',
-                            data: [6, 7, 7, 8, 9],
-                            borderColor: '#64748b',
-                            backgroundColor: '#64748b30',
-                            pointBackgroundColor: '#64748b',
-                            borderWidth: 2
-                        },
-                        {
-                            label: 'RubbishLM(Ours)',
-                            data: [10, 9, 10, 10, 9],
-                            borderColor: theme.primaryColor,
-                            backgroundColor: `${theme.primaryColor}30`,
-                            pointBackgroundColor: theme.primaryColor,
-                            borderWidth: 3
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { labels: { color: theme.textColor, font: { size: 14 } } }
-                    },
-                    scales: {
-                        r: {
-                            min: 0,
-                            max: 10,
-                            ticks: { color: theme.textColor, backdropColor: 'transparent' },
-                            grid: { color: theme.gridColor },
-                            angleLines: { color: theme.gridColor },
-                            pointLabels: { color: theme.textColor, font: { size: 12 } }
-                        }
-                    }
-                }
-            });
-        };
-
-        // 图表主题更新
-        const updateChartsTheme = () => {
-            if (lossChart) lossChart.destroy();
-            if (ablationChart) ablationChart.destroy();
-            if (radarChart) radarChart.destroy();
-            initLossCurve();
-            initAblationBar();
-            initRadarChart();
-        };
-
-        // 页面加载初始化图表
-        window.addEventListener('DOMContentLoaded', () => {
-            initLossCurve();
-            initAblationBar();
-            initRadarChart();
         });
     </script>
 </body>
